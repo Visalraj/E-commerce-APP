@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import '@coreui/coreui/dist/css/coreui.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "./globals.css";
 
@@ -13,9 +12,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
 	return (
 		<html lang="en">
 			<body className={""}>
-
 				{children}
-
 			</body>
 		</html>
 	);

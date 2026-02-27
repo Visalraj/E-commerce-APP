@@ -17,7 +17,7 @@ export default async function EntitiesList<T extends keyof EntityMap>({
     let labelArray: string[] = [];
 
     if (type === 'customers') {
-        labelArray = ['ID', 'Name', 'Username', 'Email', 'Status', 'Created Date', 'Action', 'Login'];
+        labelArray = ['ID', 'Name', 'Username', 'Email', 'Status', 'Created Date', 'Actions', 'Login'];
     } else if (type === 'products') {
         labelArray = ['ID', 'Product Name', 'Description', 'Price', 'Status', 'Created Date', 'Action'];
     }
