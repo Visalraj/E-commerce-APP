@@ -2,7 +2,7 @@
 export default async function Page() {
     return (
         <div>
-            <p>Admin Dashboard</p>
+            <p>Welcome Wizz</p>
         </div>
     )
 }

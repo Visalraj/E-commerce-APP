@@ -80,7 +80,7 @@ export default async function Entities<T extends keyof EntityMap>({
                                                         <>
                                                             <span className="pl-3">
                                                                 <ActionButtons name="Edit" isclicked={false}
-                                                                    pointto={`${process.env.NEXT_PUBLIC_BASE_URL}/admin/products/${item._id}/edit`}
+                                                                    pointto={`${process.env.NEXT_PUBLIC_BASE_URL}/admin/customers/${item._id}/edit`}
                                                                 />
                                                             </span>
                                                             <span className="pl-3">
