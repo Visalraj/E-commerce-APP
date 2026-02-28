@@ -1,11 +1,9 @@
-"use client";
-
 import { Carousel } from "flowbite-react";
 import Image from "next/image";
 
 export default function Sliders() {
     return (
-        <div className="w-full">
+        <div className="w-full p-3">
             <Carousel slideInterval={4000} pauseOnHover>
                 {/* Slide 1 */}
                 <div className="relative w-full h-[50vh]">
