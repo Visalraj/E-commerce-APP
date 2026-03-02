@@ -280,6 +280,7 @@ export async function getProducts(
                     isActive: product.isActive,
                     createdAt: await formatTime(product.createdAt.toISOString()),
                     updatedAt: product.updatedAt.toISOString(),
+                    images: product.images || [],
                 })));
 
                 const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
