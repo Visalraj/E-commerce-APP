@@ -50,8 +50,7 @@ export default async function TopDeals() {
                                     </div>
                                 </div>
                             </div>
-                        ))) ||
-                        []}
+                        ))) || []}
                 </SwipperWrapper>
             </div>
         </>
