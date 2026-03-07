@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import connectDB from "@/library/db";
 import Products from "@/models/products";
 import mongoose from "mongoose";
-export async function GET( request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(  request: Request, context: { params: Promise<{ id?: string[] }> },) {
     try {
         await connectDB();
-        const { id } = await params;
-        if (id && id !== "all") {
-            if (!mongoose.Types.ObjectId.isValid(id)) {
+        const { id } = await context.params; // 👈 await params
+        const productId = id?.[0];
+        if (productId) {
+            if (!mongoose.Types.ObjectId.isValid(productId)) {
                 return NextResponse.json(
                     { status: 400, error: "Invalid ID format" },
                     { status: 400 },
@@ -15,7 +16,7 @@ export async function GET( request: Request, { params }: { params: Promise<{ id:
             }
 
             const product = await Products.aggregate([
-                { $match: { _id: new mongoose.Types.ObjectId(id) } },
+                { $match: { _id: new mongoose.Types.ObjectId(productId) } },
                 {
                     $lookup: {
                         from: "product_images",

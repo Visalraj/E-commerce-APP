@@ -1,7 +1,8 @@
-import Skeleton from "@/app/ui/common/loading-skeleton";
-import Navbar from "@/app/ui/Home/navbar";
 import { Suspense } from "react";
 import Image from "next/image";
+import Skeleton from "@/app/ui/common/loading-skeleton";
+import Navbar from "@/app/ui/Home/navbar";
+import { AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -30,7 +31,16 @@ async function ProductDetails({ id }: { id: string }) {
         <main className="container mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row gap-12 bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
                 <div className="w-full md:w-1/2 aspect-square bg-gray-100 rounded-[2rem] overflow-hidden relative">
-                    <Image src={data.images?.[0] ? `${process.env.NEXT_PUBLIC_CLOUDINARY_URL}${data.images[0]}` : "https://flowbite.com/docs/images/products/apple-watch.png"} alt="product image" fill className="object-cover rounded-base" />
+                    <Image
+                        src={
+                            data.images?.[0]
+                                ? `${process.env.NEXT_PUBLIC_CLOUDINARY_URL}${data.images[0]}`
+                                : "https://flowbite.com/docs/images/products/apple-watch.png"
+                        }
+                        alt="product image"
+                        fill
+                        className="object-cover rounded-base"
+                    />
                 </div>
                 <div className="flex-1">
                     <h1 className="text-4xl font-bold">
@@ -39,6 +49,13 @@ async function ProductDetails({ id }: { id: string }) {
                     <p className="text-2xl mt-4 font-semibold text-blue-600">
                         ${data.product_price}
                     </p>
+                    <p className="text-gray-600 mt-4">
+                        {data.product_desc}
+                    </p>
+                    <div className="wrap-btns pt-4 mt-3 flex gap-4">
+                        <AddToCartButton id={data._id} />
+                        <BuyNowButton id={data._id} />
+                    </div>
                 </div>
             </div>
         </main>
