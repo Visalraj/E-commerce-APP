@@ -4,8 +4,12 @@ import { signIn } from '../auth';
 import { AuthError } from 'next-auth';
 import { z } from 'zod';
 import Users from '@/models/users';
-import { createUniqueUsername, encryptString } from '../Helpers/function';
+import { createUniqueUsername, encryptString, isUserLoggedIn } from '../Helpers/function';
 import { generateRandomString } from '../Helpers/function';
+import mongoose from "mongoose";
+import { NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
+import UserWishlist from '@/models/user-wishlist';
 
 export async function authenticate(
     prevState: string | undefined,
@@ -72,4 +76,44 @@ export async function createCustomer(formData: FormData) {
         console.log('Error during user creation or DB connection:', error);
         return { status: 500, redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}` };
     }
+}
+
+export async function addToCart({ id }: { id?: string }) {
+    const productId = id || 'unknown';
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return NextResponse.json(
+            { status: 400, error: "Invalid ID format" },
+            { status: 400 },
+        );
+    }
+    try {
+        const user = await isUserLoggedIn();
+        if (!user) return redirect("/login");
+        await connectDB();
+        await UserWishlist.findOneAndUpdate(
+            { userId: new mongoose.Types.ObjectId(user.id) },
+            {
+                $addToSet: {
+                    products: new mongoose.Types.ObjectId(productId),
+                },
+            },
+            { upsert: true, new: true },
+        );
+
+        console.log("Product added to wishlist successfully");
+        return { status: true, message: "Product added to wishlist" };      
+    } catch (error) {
+        console.error("Error adding product to wishlist:", error);
+        return { status: false, error: "Failed to add product to wishlist" };
+       
+    }
+}
+export async function buyProduct({ id }: { id?: string }) {
+     const productId = id || "unknown";
+     if (!mongoose.Types.ObjectId.isValid(productId)) {
+         return NextResponse.json(
+             { status: 400, error: "Invalid ID format" },
+             { status: 400 },
+         );
+     }
 }

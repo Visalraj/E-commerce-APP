@@ -18,4 +18,10 @@ export type Products_schema = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    images: { url: string }[];
 }
+
+export type TopDealsResponse = {
+    status: number;
+    data: Products_schema[];
+};
