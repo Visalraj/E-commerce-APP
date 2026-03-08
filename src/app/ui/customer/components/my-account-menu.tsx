@@ -28,9 +28,7 @@ export default function MyAccount() {
     };
 
     return (
-        <Dropdown
-            className="ml-7"
-        >
+        <Dropdown className="ml-7" >
             <Dropdown.Toggle variant="primary" id="dropdown-basic">
                 My Account
             </Dropdown.Toggle>
