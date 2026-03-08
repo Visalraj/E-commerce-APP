@@ -9,6 +9,6 @@ const userWishlistSchema = new Schema(
     }
 );
 
-const UserWishlist = mongoose.models.userWishlist || mongoose.model("userWishlist", userWishlistSchema);
+const UserWishlist = mongoose.models.user_Wishlist || mongoose.model("user_Wishlist", userWishlistSchema);
 
 export default UserWishlist;

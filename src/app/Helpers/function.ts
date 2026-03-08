@@ -57,7 +57,7 @@ export async function formatTime(time: string) {
 }
 export async function isUserLoggedIn() {
     const session = await auth();
-    if (!session?.user) return null;
+    if (!session?.user)  return null;
     return session.user;
 }
 

@@ -86,9 +86,9 @@ export async function addToCart({ id }: { id?: string }) {
             { status: 400 },
         );
     }
+    const user = await isUserLoggedIn();
+    if (!user) return redirect("/login");
     try {
-        const user = await isUserLoggedIn();
-        if (!user) return redirect("/login");
         await connectDB();
         await UserWishlist.findOneAndUpdate(
             { userId: new mongoose.Types.ObjectId(user.id) },
@@ -108,6 +108,39 @@ export async function addToCart({ id }: { id?: string }) {
        
     }
 }
+
+export async function removeFromCart({ id }: { id?: string }) {
+    const productId = id || 'unknown';
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return NextResponse.json(
+            { status: 400, error: "Invalid ID format" },
+            { status: 400 },
+        );
+    }
+    const user = await isUserLoggedIn();
+    if (!user) return redirect("/login");
+    try {
+        await connectDB();
+        const wishlist = await UserWishlist.findOneAndUpdate(
+            { userId: new mongoose.Types.ObjectId(user.id) },
+            {
+                $pull: {
+                    products: new mongoose.Types.ObjectId(productId),
+                },
+            },
+            { new: true },
+        );
+        if (wishlist && wishlist.products.length === 0) 
+            await UserWishlist.deleteOne({ _id: wishlist._id });
+
+        console.log("Product removed from wishlist successfully");
+        return { status: true, message: "Product removed from wishlist" };      
+    } catch (error) {
+        console.error("Error removing product from wishlist:", error);
+        return { status: false, error: "Failed to remove product from wishlist" };
+    }
+}
+
 export async function buyProduct({ id }: { id?: string }) {
      const productId = id || "unknown";
      if (!mongoose.Types.ObjectId.isValid(productId)) {
