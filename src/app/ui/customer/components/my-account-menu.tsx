@@ -28,7 +28,9 @@ export default function MyAccount() {
     };
 
     return (
-        <Dropdown className='ml-7'>
+        <Dropdown
+            className="ml-7"
+        >
             <Dropdown.Toggle variant="primary" id="dropdown-basic">
                 My Account
             </Dropdown.Toggle>
@@ -37,7 +39,11 @@ export default function MyAccount() {
                 <Dropdown.Item as="button">
                     <Link href="/dashboard">Dashboard</Link>
                 </Dropdown.Item>
-                <Dropdown.Item as="button" onClick={handleLogout} style={{ color: "red" }}>
+                <Dropdown.Item
+                    as="button"
+                    onClick={handleLogout}
+                    style={{ color: "red" }}
+                >
                     Signout
                 </Dropdown.Item>
             </Dropdown.Menu>

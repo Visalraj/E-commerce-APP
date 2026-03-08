@@ -21,6 +21,11 @@ const nextConfig = {
                 hostname: "res.cloudinary.com",
                 pathname: "/**",
             },
+            {
+                protocol: "https",
+                hostname: "cdn.dummyjson.com",
+                pathname: "/**",
+            },
         ],
     },
     experimental: {

@@ -3,25 +3,27 @@ import Image from "next/image";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import Navbar from "@/app/ui/Home/navbar";
 import { AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
+import { isUserLoggedIn } from "@/app/Helpers/function";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const user = await isUserLoggedIn();
 
+    const productUserId = id+'____'+user?.id;
     return (
         <div className="min-h-screen bg-[#FDFDFD]">
             <Navbar />
             <Suspense fallback={<Skeleton />}>
-                <ProductDetails id={id} />
+                <ProductDetails id={productUserId} />
             </Suspense>
         </div>
     );
 }
 
 async function ProductDetails({ id }: { id: string }) {
-    const res = await fetch( `${process.env.API_URL}top-deals/${id}`,{
-            cache: "no-store", 
-        },
-    );
+    const res = await fetch(`${process.env.API_URL}top-deals/${id}`, {
+        next: { revalidate: 0 },
+    });
 
     if (!res.ok) return ( <div className="p-20 text-center">Product not found</div>);
     const { data } = await res.json();
@@ -53,7 +55,7 @@ async function ProductDetails({ id }: { id: string }) {
                         {data.product_desc}
                     </p>
                     <div className="wrap-btns pt-4 mt-3 flex gap-4">
-                        <AddToCartButton id={data._id} />
+                        <AddToCartButton id={data._id} isWishlisted = {data.isInWishlist}/>
                         <BuyNowButton id={data._id} />
                     </div>
                 </div>
