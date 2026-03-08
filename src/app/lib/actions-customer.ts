@@ -37,18 +37,28 @@ const FormSchema = z.object({
     customer_lname: z.string().min(1),
     customer_age: z.coerce.number().int(),
     customer_email: z.string().email().min(1),
-    customer_addr: z.string().min(10),
+    customer_addr_one: z.string().min(5),
+    customer_addr_two: z.string(),
+    customer_city: z.string(),
+    customer_county: z.string(),
+    customer_country: z.string(),
+    customer_postcode: z.string()
 });
 
 const CreateCustomer = FormSchema.omit({ id: true });
 
 export async function createCustomer(formData: FormData) {
-    const { customer_fname, customer_lname, customer_age, customer_email: rawEmail, customer_addr } = CreateCustomer.parse({
+    const { customer_fname, customer_lname, customer_age, customer_email: rawEmail, customer_addr_one, customer_addr_two, customer_city, customer_county, customer_country, customer_postcode } = CreateCustomer.parse({
         customer_fname: formData.get('customer_fname'),
         customer_lname: formData.get('customer_lname'),
         customer_age: formData.get('customer_age'),
         customer_email: formData.get('customer_email'),
-        customer_addr: formData.get('customer_addr'),
+        customer_addr_one: formData.get('customer_addr_one'),
+        customer_addr_two: formData.get('customer_addr_two'),
+        customer_city: formData.get('customer_city'),
+        customer_county: formData.get('customer_county'),
+        customer_country: formData.get('customer_country'),
+        customer_postcode: formData.get('customer_postcode'),
     });
 
     const email = await encryptString(rawEmail as string);
@@ -63,7 +73,12 @@ export async function createCustomer(formData: FormData) {
                 age: customer_age,
                 email: email,
                 password: password,
-                address: customer_addr,
+                address_line_one: customer_addr_one,
+                address_line_two: customer_addr_two,
+                city: customer_city,
+                county: customer_county,
+                country: customer_country,
+                postcode: customer_postcode,
                 isActive: false,
                 username: username
             });

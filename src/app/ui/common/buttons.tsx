@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { addToCart, removeFromCart, buyProduct } from "@/app/lib/actions-customer";
+import { addToCart, removeFromCart } from "@/app/lib/actions-customer";
 import Icon from "@/app/ui/common/svg-tiles";
+import Link from "next/link";
 
 export function AddToCartButton({ id, isWishlisted }: { id?: string; isWishlisted?: boolean }) {
     const [wishlisted, setWishlisted] = useState(isWishlisted || false);
@@ -28,9 +29,11 @@ export function AddToCartButton({ id, isWishlisted }: { id?: string; isWishliste
 
 export function BuyNowButton({ id }: { id?: string }) {
     return (
-        <button className="PrimaryBtn flex items-center gap-2" onClick={() => buyProduct({ id })}>
-            <Icon name="Shoppingbag" />
-            Buy Now
-        </button>
+        <Link href={`/product/buy/${id}`}>
+            <button className="PrimaryBtn flex items-center gap-2">
+                <Icon name="Shoppingbag" />
+                Buy Now
+            </button>
+        </Link>
     );
 }
