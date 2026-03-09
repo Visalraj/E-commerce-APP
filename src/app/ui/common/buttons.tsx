@@ -5,6 +5,17 @@ import { addToCart, removeFromCart } from "@/app/lib/actions-customer";
 import Icon from "@/app/ui/common/svg-tiles";
 import Link from "next/link";
 
+
+export function CreateButton() {
+    return (
+        <>
+            <button type="submit" className="px-8 py-3 DefaultBtn">
+                Create
+            </button>
+        </>
+    );
+}
+
 export function AddToCartButton({ id, isWishlisted }: { id?: string; isWishlisted?: boolean }) {
     const [wishlisted, setWishlisted] = useState(isWishlisted || false);
 

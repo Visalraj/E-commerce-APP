@@ -5,7 +5,7 @@ import { authenticate } from "@/app/lib/actions-customer";
 import Link from "next/link";
 
 export default function Loginform() {
-    const [errorMessage, formAction, isPending] = useActionState(
+    const [state, formAction, isPending] = useActionState(
         authenticate,
         undefined,
     );
@@ -41,8 +41,9 @@ export default function Loginform() {
                 <form className="space-y-5" action={formAction}>
                     <div>
                         <label className="text-sm text-gray-700"> Email address </label>
-                        <input type="email" id="email-id" name="email" required  className="mt-2 w-full rounded-xl border border-gray-300  px-4 py-3 text-gray-900 placeholder-gray-400
+                        <input type="email" id="email-id" name="email"   className="mt-2 w-full rounded-xl border border-gray-300  px-4 py-3 text-gray-900 placeholder-gray-400
                         focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        {state?.errors?.customer_email && ( <p className="text-red-500 py-1">{state.errors.customer_email[1]}</p> )}
                     </div>
 
                     <div>
@@ -55,13 +56,14 @@ export default function Loginform() {
                             </a>
                         </div>
 
-                        <input type="password" id="password-id" name="password"  required  className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input type="password" id="password-id" name="password"   className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        {state?.errors?.customer_password && ( <p className="text-red-500 py-1">{state.errors.customer_password[0]}</p> )}
                     </div>
 
                     <button  type="submit" disabled={isPending} className="w-full flex justify-center items-center  bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300" >
                         Sign in
                     </button>
-                    {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+                    {state?.message && (<p className="text-red-500">{state.message}</p>)}
                 </form>
 
                 <p className="mt-8 text-center text-sm text-gray-500">

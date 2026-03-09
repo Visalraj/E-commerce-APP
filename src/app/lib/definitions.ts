@@ -25,3 +25,10 @@ export type TopDealsResponse = {
     status: number;
     data: Products_schema[];
 };
+
+export type AuthState = {
+    errors?: {  customer_email?: string[];
+            customer_password?: string[];
+    };
+    message?: string;
+};
