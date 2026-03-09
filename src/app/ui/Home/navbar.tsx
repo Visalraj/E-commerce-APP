@@ -1,9 +1,9 @@
 'use server';
-import { isUserLoggedIn } from "@/app/Helpers/function";
+import { isLoggedIn } from "@/app/Helpers/function";
 import Link from "next/link";
 import MyAccount from "../customer/components/my-account-menu";
 export default async function Navbar() {
-    const isUser = await isUserLoggedIn();
+    const isUser = await isLoggedIn();
     return (
         <nav className="bg-white border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">

@@ -1,7 +1,7 @@
 'use server';
 import Breadcrumbs from "@/app/ui/admin/components/breadcrumbs";
 import EditCustomerForm from "@/app/ui/admin/components/edit-customer-form";
-import { getCustomerById } from "@/app/lib/actions-admins";
+import { getCustomerById } from "@/app/Helpers/function";
 
 export default async function editCustomer({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

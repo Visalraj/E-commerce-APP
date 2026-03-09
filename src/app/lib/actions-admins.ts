@@ -155,29 +155,6 @@ export async function updateCustomerById(id: string, formData: FormData) {
 
 }
 
-export async function getCustomerById({ id }: { id: string }) {
-    const objectId = new mongoose.Types.ObjectId(id);
-    const customerObject = await Users.find({ _id: objectId });
-    if (customerObject.length >= 0) {
-        console.log('User Fetched');
-        const serializedCustomer: Customer[] = await Promise.all(
-            customerObject.map(async customer => ({
-                _id: customer._id.toString(),
-                firstname: customer.firstname,
-                lastname: customer.lastname,
-                email: await decryptString(customer.email),
-                username: customer.username,
-                password: customer.password,
-                isActive: customer.isActive,
-                createdAt: await formatTime(customer.createdAt.toISOString()),
-                updatedAt: customer.updatedAt.toISOString(),
-            }))
-        );
-
-        return { status: 200, data: serializedCustomer };
-    }
-}
-
 
 export async function deleteCustomerById(id: string) {
     const customerId = new mongoose.Types.ObjectId(id);

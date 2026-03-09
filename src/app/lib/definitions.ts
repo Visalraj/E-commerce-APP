@@ -6,6 +6,12 @@ export type Customer = {
     username: string;
     password: string;
     isActive: boolean;
+    customer_addr_one: string;
+    customer_addr_two: string;
+    customer_city: string;
+    customer_county: string;
+    customer_country: string;
+    customer_postcode: string;
     createdAt: string;
     updatedAt: string;
 };
@@ -24,4 +30,11 @@ export type Products_schema = {
 export type TopDealsResponse = {
     status: number;
     data: Products_schema[];
+};
+
+export type AuthState = {
+    errors?: {  customer_email?: string[];
+            customer_password?: string[];
+    };
+    message?: string;
 };

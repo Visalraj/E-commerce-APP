@@ -1,8 +1,11 @@
 'use server';
 import * as NodeCrypto from 'crypto';
 import { auth } from "../auth"
+import { redirect } from 'next/navigation';
 import connectDB from '@/library/db';
 import Users from '@/models/users';
+import mongoose from 'mongoose';
+import { Customer } from '../lib/definitions';
 
 export async function generateRandomString({ length }: { length: number }) {
     let result = '';
@@ -55,10 +58,48 @@ export async function formatTime(time: string) {
 
     return formattedDateTime;
 }
-export async function isUserLoggedIn() {
+export async function isLoggedIn() {
     const session = await auth();
     if (!session?.user)  return null;
     return session.user;
+}
+
+export async function redirectToLoginIfNotAuthenticated() {
+    const session = await auth();
+    if (!session?.user) {
+        redirect('/login');
+    }
+}
+
+export async function getCustomerById({ id }: { id: string }) {
+    const objectId = new mongoose.Types.ObjectId(id);
+    const customerObject = await Users.find({ _id: objectId });
+    if (customerObject.length >= 0) {
+        console.log("User Fetched");
+        const serializedCustomer: Customer[] = await Promise.all(
+            customerObject.map(async (customer) => ({
+                _id: customer._id.toString(),
+                firstname: customer.firstname,
+                lastname: customer.lastname,
+                email: await decryptString(customer.email),
+                username: customer.username,
+                password: customer.password,
+                isActive: customer.isActive,
+                customer_addr_one: customer.address_line_one,
+                customer_addr_two: customer.address_line_two,
+                customer_city: customer.city,
+                customer_county: customer.county,
+                customer_country: customer.country,
+                customer_postcode: customer.postcode,
+                createdAt: await formatTime(
+                    customer.createdAt.toISOString(),
+                ),
+                updatedAt: customer.updatedAt.toISOString(),
+            })),
+        );
+
+        return { status: 200, data: serializedCustomer };
+    }
 }
 
 export async function createUniqueUsername(name: string) {
