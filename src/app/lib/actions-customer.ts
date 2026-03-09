@@ -4,7 +4,7 @@ import { signIn } from '../auth';
 import { AuthError } from 'next-auth';
 import { z } from 'zod';
 import Users from '@/models/users';
-import { createUniqueUsername, encryptString, isUserLoggedIn } from '../Helpers/function';
+import { createUniqueUsername, encryptString, isLoggedIn } from '../Helpers/function';
 import { generateRandomString } from '../Helpers/function';
 import mongoose from "mongoose";
 import { NextResponse } from 'next/server';
@@ -34,7 +34,7 @@ export async function authenticate( prevState: AuthState | undefined, formData: 
                 case 'CredentialsSignin':
           return { message: "Invalid credentials" };
            default:
-                    return { message: "Something went wrong" };
+                return { message: "Something went wrong" };
             }
         }
         throw error;
@@ -121,7 +121,7 @@ export async function addToCart({ id }: { id?: string }) {
             { status: 400 },
         );
     }
-    const user = await isUserLoggedIn();
+    const user = await isLoggedIn();
     if (!user) return redirect("/login");
     try {
         await connectDB();
@@ -152,7 +152,7 @@ export async function removeFromCart({ id }: { id?: string }) {
             { status: 400 },
         );
     }
-    const user = await isUserLoggedIn();
+    const user = await isLoggedIn();
     if (!user) return redirect("/login");
     try {
         await connectDB();

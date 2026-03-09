@@ -3,11 +3,11 @@ import Image from "next/image";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import Navbar from "@/app/ui/Home/navbar";
 import { AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
-import { isUserLoggedIn } from "@/app/Helpers/function";
+import { isLoggedIn } from "@/app/Helpers/function";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const user = await isUserLoggedIn();
+    const user = await isLoggedIn();
 
     const productUserId = id+'____'+user?.id;
     return (

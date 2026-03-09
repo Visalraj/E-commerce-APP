@@ -1,9 +1,9 @@
 "use client";
-
 import { useState } from "react";
+import Link from "next/link";
 import { addToCart, removeFromCart } from "@/app/lib/actions-customer";
 import Icon from "@/app/ui/common/svg-tiles";
-import Link from "next/link";
+import AddressModal from "../customer/components/modals";
 
 
 export function CreateButton() {
@@ -47,4 +47,26 @@ export function BuyNowButton({ id }: { id?: string }) {
             </button>
         </Link>
     );
+}
+
+export function AddAdressButton({ onClick }: { onClick: () => void }) {
+    return (
+        <button
+            className="flex items-center px-5 py-2.5 border border-gray-200 text-black rounded-full text-md hover:border-blue-400 transition-all duration-300 shadow-sm active:scale-95"
+            onClick={onClick}
+        >
+            <Icon name="Plus" /> Add New Address{" "}
+        </button>
+    );
+}
+
+export function AddAdressButtonWrapper(){
+    const [open, setOpen] = useState(false);
+    return (
+        <>
+            <AddAdressButton onClick={() => setOpen(true)} />
+            {open && <AddressModal onClose={() => setOpen(false)} />}
+        </>
+    );
+
 }

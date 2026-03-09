@@ -20,7 +20,6 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
                 );
             }     
             
-            console.log("Fetching product with ID:", productId, "for user ID:", user_id);
             const product = await Products.aggregate([
                 {
                     $match: {
