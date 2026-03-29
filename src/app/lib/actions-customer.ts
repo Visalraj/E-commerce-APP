@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import UserWishlist from '@/models/user-wishlist';
 import { AuthState } from './definitions';
+import usersMultipleAddress from '@/models/user-multiple-address';
 
 export async function authenticate( prevState: AuthState | undefined, formData: FormData ): Promise<AuthState | undefined> {    
     const FormSchema = z.object({
@@ -185,3 +186,75 @@ export async function buyProduct({ id }: { id?: string }) {
          );
      }
 }
+
+export async function createCustomerMultipleAddress(formData: FormData) {
+    const FormSchema = z.object({
+        id: z.string(),
+        firstname: z.string().min(1, "Firstname is required"),
+        lastname: z.string().min(1, "Lastname is required"),
+        email: z.string().email().min(1, "Email is required"),
+        phone: z.string().min(1, "Phone is required"),
+        add_line_one: z.string().min(3, "Address Line 1 is required"),
+        add_line_two: z.string().min(5, "Address Line 2 is required").optional(),
+        city: z.string().min(3, "City is required"),
+        county: z.string().min(3, "County is required"),
+        country: z.string().min(2, "Country is required"),
+        postcode: z.string().min(6, "Postcode is required"),
+    });
+    const CreateCustomerMultipleAddress = FormSchema.omit({ id: true });
+    
+    const validation = CreateCustomerMultipleAddress.safeParse({
+        firstname: formData.get("firstname"),
+        lastname: formData.get("lastname"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        add_line_one: formData.get("add_line_one"),
+        add_line_two: formData.get("add_line_two"),
+        city: formData.get("city"),
+        county: formData.get("county"),
+        country: formData.get("country"),
+        postcode: formData.get("postcode"),
+    });
+    if (!validation.success) {
+        return {success: false,  errors: validation.error.flatten().fieldErrors,  };
+    }
+
+    const { firstname, lastname, email, phone, add_line_one, add_line_two, city, county, country,postcode} = validation.data;
+
+    const cust_email = await encryptString(email as string);
+    
+    const userId = await isLoggedIn();
+    if(!userId) return{status:false};
+
+    try {
+        if (await connectDB()) {
+            console.log(userId.id)
+            await usersMultipleAddress.create({
+                userId: userId?.id,
+                firstname: firstname,
+                lastname: lastname,
+                email: cust_email,
+                phone: phone,
+                customer_addr_one: add_line_one,
+                customer_addr_two: add_line_two,
+                customer_city: city,
+                customer_county: county,
+                customer_country: country,
+                customer_postcode: postcode,
+            });
+            console.log("User's Multiple Address created successfully");
+            return {status: true,};
+        } else {
+            return {
+                status: false,
+                redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}`,
+            };
+        }
+    } catch (error) {
+        console.error("error:", error);
+        return {
+            success: false,
+            errors: { general: ["Invalid input data"] },
+        };
+    }
+} 

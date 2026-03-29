@@ -104,6 +104,12 @@ export async function getCustomers(
                     username: customer.username,
                     password: customer.password,
                     isActive: customer.isActive,
+                    customer_addr_one:customer.customer_addr_one,
+                    customer_addr_two:customer.customer_addr_two,
+                    customer_city:customer.customer.cutomer_city,
+                    customer_county:customer.cutomer_county,
+                    customer_postcode:customer.customer_postcode,
+                    customer_country:customer.customer_country,
                     createdAt: await formatTime(customer.createdAt.toISOString()),
                     updatedAt: customer.updatedAt.toISOString(),
                 })));
