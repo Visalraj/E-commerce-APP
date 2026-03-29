@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import connectDB from "@/library/db";
 import Products from "@/models/products";
 import mongoose from "mongoose";
+import Users from "@/models/users";
 export async function GET(  request: Request, context: { params: Promise<{ id?: string[] }> },) {
 
     try {
         await connectDB();
         const { id } = await context.params;
         const productId = id?.[0].split("____")[0];
-        let user_id=null;
+        let user_id = null;
         if (id?.[0].split("____")[1]!== "undefined") 
             user_id = id?.[0].split("____")[1].toString();
         
@@ -131,5 +132,40 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
             { status: 500, error: "Internal Server Error" },
             { status: 500 },
         );
+    }
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const {type,userId} = body;
+    if((type != '' || type != undefined) && type == 'user_address'  && (userId!='' || userId !=undefined)){
+        try{
+            await connectDB();
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+            const userData = await Users.aggregate([
+                { $match: { _id: userObjectId } },
+                {
+                    $lookup: {
+                        from: "users_multiple_addresses",
+                        localField: "_id",
+                        foreignField: "userId",
+                        as: "addresses",
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        addresses: 1,
+                    },
+                },
+            ]);
+            return NextResponse.json({ status: 200, data: userData[0]?.addresses });
+        } catch (error) {
+            console.error("Database Error:", error);
+            return NextResponse.json(
+                { status: 500, error: "Internal Server Error" },
+                { status: 500 },
+            );
+        }
     }
 }
