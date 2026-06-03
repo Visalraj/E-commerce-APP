@@ -3,8 +3,7 @@ import Navbar from "@/app/ui/Home/navbar";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import { getCustomerById, isLoggedIn } from "@/app/Helpers/function";
 import { Customer } from "@/app/lib/definitions";
-import Icon from "@/app/ui/common/svg-tiles";
-import { AddAdressButtonWrapper } from "@/app/ui/common/buttons";
+import ProductBuyPage from "@/app/ui/customer/components/product-buy-page";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     //await redirectToLoginIfNotAuthenticated();
@@ -41,112 +40,33 @@ async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCu
     const addressData = await response.json();
 
     const result = [getCustomerData, ...(addressData.data || [])];
-    if (!res.ok) return <div className="p-20 text-center">Product not found</div>;
+    if (!res.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
     const { data } = await res.json();
     if (!data) return <div className="p-20 text-center">No data found</div>;
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        console.log("Form submitted");
-    }
-    return (
-        <>
-            <div className="flex gap-6 max-w-6xl mx-auto px-6 py-6">
-                <div className="main-container-user w-4/5 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6 h-[400px] overflow-y-auto">
-                    <div className="head-items flex gap-6 justify-between">
-                        <h3 className="text-xl mb-4"> Delivery Address</h3>
-                        <AddAdressButtonWrapper />
-                    </div>
-                    {result ? (
-                        <form onSubmit={handleSubmit}>
-                            <div className="flex flex-row flex-wrap gap-4 w-full mt-4">
-                                {result.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="cards flex-1 min-w-[250px] max-w-[300px] border border-gray-200 bg-white p-6 rounded-xl shadow-sm hover:border-blue-400 transition-all"
-                                    >
-                                        <label className="relative flex flex-col cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="delivery-address"
-                                                id={`delivery-address-${item._id}`}
-                                                value={item._id}
-                                                className="peer sr-only"
-                                            />
+    
+   return (
+       <>
+           <div className="flex gap-6 max-w-6xl mx-auto px-6 py-6">
+               {/* Left Column */}
+               <div className="w-4/5 flex flex-col gap-4">
+                   {/* Delivery Address */}
+                    {result.length > 0 && <ProductBuyPage customerData={result} />}                  
+               </div>
 
-                                            <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-colors">
-                                                <div className="h-2 w-2 rounded-full bg-white" />
-                                            </div>
+               {/* Right Column */}
+               <div className="w-1/5">
+                   <div className="sticky top-6 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6 h-[400px] overflow-y-auto">
+                       <h3 className="text-xl mb-4">Order Summary</h3>
 
-                                            <div className="mt-4">
-                                                <div className="flex items-center justify-between">
-                                                    <h4 className="text-lg font-bold text-gray-900 tracking-tight">
-                                                        {item.firstname} {item.lastname}
-                                                    </h4>
-                                                    <span className="hidden peer-checked:block text-xs font-bold text-blue-600 uppercase tracking-wider">
-                                                        Selected
-                                                    </span>
-                                                </div>
-
-                                                <div className="mt-2 text-sm leading-6 text-gray-600">
-                                                    <p>
-                                                        {" "}
-                                                        {item.customer_addr_one}, {item.customer_addr_two}
-                                                    </p>
-                                                    <p>
-                                                        {" "}
-                                                        {item.customer_city}, {item.customer_county},{" "}
-                                                        {item.customer_postcode}{" "}
-                                                    </p>
-                                                    <p className="font-medium text-gray-800"> {item.customer_country}</p>
-                                                </div>
-
-                                                <button
-                                                    type="button"
-                                                    className="group mt-4 flex items-center gap-1 text-sm font-semibold hover:text-blue-800 transition-colors"
-                                                >
-                                                    Edit Address
-                                                    <span className="transform transition-transform group-hover:translate-x-1">
-                                                        <Icon name="Arrowright" />
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </form>
-                    ) : (
-                        <></>
-                    )}
-                </div>
-                <div className="main-container-product-details w-1/5 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6 h-[400px] overflow-y-auto">
-                    There are many variations of passages of Lorem Ipsum available, but the majority have suffered
-                    alteration in some form, by injected humour, or randomised words which dont look even slightly
-                    believable. There are many variations of passages of Lorem Ipsum available, but the majority have
-                    suffered alteration in some form, by injected humour, or randomised words which dont look even
-                    slightly believable. There are many variations of
-                </div>
-            </div>
-
-            {/* Payment Method */}
-            <div className="flex gap-6 max-w-6xl mx-auto px-6 py-2">
-                <div className="w-4/5 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    <h3 className="text-xl mb-4">Payment Method</h3>
-                    <p className="text-gray-600">Please select your preferred payment method for this purchase.</p>
-                </div>
-                <div className="w-1/5" />
-            </div>
-
-            {/* Submit */}
-            <div className="flex gap-6 max-w-6xl mx-auto px-6 py-2">
-                <div className="w-4/5 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    <button className="SecondaryBtn text-black font-bold py-2 px-4 rounded" >
-                        Submit Order
-                    </button>
-                </div>
-                <div className="w-1/5" />
-            </div>
-        </>
-    );
+                       <p className="text-gray-600">
+                           There are many variations of passages of Lorem Ipsum available, but the majority have
+                           suffered alteration in some form, by injected humour, or randomised words which dont look
+                           even slightly believable.
+                       </p>
+                   </div>
+               </div>
+           </div>
+       </>
+   );
 }

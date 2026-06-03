@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import SwipperWrapper from "../components/Swipper-Wrapper";
+import SwipperWrapper from "../ui/customer/components/Swipper-Wrapper";
 import { TopDealsResponse } from "../lib/definitions";
 
 export default async function TopDeals() {
