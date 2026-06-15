@@ -70,3 +70,22 @@ export function AddAdressButtonWrapper(){
     );
 
 }
+
+export function QuantityInput({ price }: { price: number;}) {
+    const handleChange = (value: string) => {
+        const quantity = parseInt(value);
+        const totalPrice = quantity * price;
+        window.dispatchEvent(new CustomEvent("price:update", { detail: { price: totalPrice } }));
+    };
+
+    return (
+        <select  name="quantity"  id="quantity" className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm"  defaultValue="1" onChange={(e) => handleChange(e.target.value)}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    );
+}
+

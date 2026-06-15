@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import Navbar from "@/app/ui/Home/navbar";
-import { AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
+import { AddToCartButton, BuyNowButton, QuantityInput } from "@/app/ui/common/buttons";
 import { isLoggedIn } from "@/app/Helpers/function";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -28,7 +28,7 @@ async function ProductDetails({ id }: { id: string }) {
     if (!res.ok) return ( <div className="p-20 text-center">Product not found</div>);
     const { data } = await res.json();
     if (!data) return <div className="p-20 text-center">No data found</div>;
-
+    
     return (
         <main className="container mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row gap-12 bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
@@ -45,17 +45,23 @@ async function ProductDetails({ id }: { id: string }) {
                     />
                 </div>
                 <div className="flex-1">
-                    <h1 className="text-4xl font-bold">
-                        {data.product_name}
-                    </h1>
-                    <p className="text-2xl mt-4 font-semibold text-blue-600">
+                    <h1 className="text-4xl font-bold">{data.product_name}</h1>
+                    <p className="text-2xl mt-4 font-semibold text-blue-600" data-price-display>
                         ${data.product_price}
                     </p>
-                    <p className="text-gray-600 mt-4">
-                        {data.product_desc}
-                    </p>
+                    <script
+                        dangerouslySetInnerHTML={{ __html: ` window.addEventListener("price:update", (e) => {
+                        document.querySelector("[data-price-display]").textContent = "$" + e.detail.price;}); `,  }}
+                    />
+                    <p className="text-gray-600 mt-4">{data.product_desc}</p>
+                    <div className="quantity-input mt-6">
+                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+                            Quantity
+                        </label>
+                        <QuantityInput price={data.product_price} />
+                    </div>
                     <div className="wrap-btns pt-4 mt-3 flex gap-4">
-                        <AddToCartButton id={data._id} isWishlisted = {data.isInWishlist}/>
+                        <AddToCartButton id={data._id} isWishlisted={data.isInWishlist} />
                         <BuyNowButton id={data._id} />
                     </div>
                 </div>
