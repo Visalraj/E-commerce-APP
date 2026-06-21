@@ -1,15 +1,17 @@
+'use server';
 import { Suspense } from "react";
 import Navbar from "@/app/ui/Home/navbar";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import { getCustomerById, isLoggedIn } from "@/app/Helpers/function";
 import { Customer } from "@/app/lib/definitions";
-import Icon from "@/app/ui/common/svg-tiles";
-import { AddAdressButtonWrapper } from "@/app/ui/common/buttons";
+import {ProductBuyPage} from "@/app/ui/customer/components/product-buy-page";
+import Image from "next/image";
+import { cookies } from "next/headers";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    //await redirectToLoginIfNotAuthenticated();D2wvz8Lp2m
+    //await redirectToLoginIfNotAuthenticated();
     const user = await isLoggedIn();
-    const productUserId = id+'____'+user?.id;
+    const productUserId = id + "____" + user?.id;
 
     const response = user?.id ? await getCustomerById({ id: user.id }) : null;
     const getCustomerData = response?.data[0] || null;
@@ -17,20 +19,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <div className="min-h-screen bg-[#FDFDFD]">
             <Navbar />
             <Suspense fallback={<Skeleton />}>
-                <ProductDetails id={productUserId} getCustomerData={getCustomerData} userId = {user?.id}/>
+                <ProductDetails id={productUserId} getCustomerData={getCustomerData} userId={user?.id} />
             </Suspense>
         </div>
     );
 }
-async function ProductDetails({
-    id,
-    getCustomerData,
-    userId,
-}: {
-    id: string;
-    getCustomerData: Customer | null;
-    userId: string | undefined;
-}) {
+
+
+async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCustomerData: Customer | null; userId: string | undefined;}) {
     const res = await fetch(`${process.env.API_URL}top-deals/${id}`, {
         cache: "no-store",
     });
@@ -48,113 +44,75 @@ async function ProductDetails({
     });
     const addressData = await response.json();
 
-    const result = [ getCustomerData, ...(addressData.data || []),]
-
-    console.log("Merged Address Data:", result);
-    if (!res.ok)
-        return (
-            <div className="p-20 text-center">Product not found</div>
-        );
+    const result = [getCustomerData, ...(addressData.data || [])];
+    if (!res.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
     const { data } = await res.json();
-    if (!data)
-        return <div className="p-20 text-center">No data found</div>;
+    if (!data) return <div className="p-20 text-center">No data found</div>;
+
+    const quantity = parseInt((await cookies()).get("selected_quantity")?.value ?? "1");
 
     return (
         <>
-            <div className="flex gap-6 max-w-6xl mx-auto px-6 py-12">
-                <div className="main-container-user w-4/5 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    <div className="head-items flex gap-6 justify-between">
-                        <h3 className="text-xl mb-4">
-                            {" "}
-                            Delivery Address
-                        </h3>
-                        <AddAdressButtonWrapper />
-                    </div>
-                    {result ? (
-                        <div className="flex flex-row flex-wrap gap-4 w-full mt-4">
-                            {result.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="cards flex-1 min-w-[250px] max-w-[300px] border border-gray-200 bg-white p-6 rounded-xl shadow-sm hover:border-blue-400 transition-all"
-                                >
-                                    <label className="relative flex flex-col cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="delivery-address"
-                                            id={`delivery-address-${item._id}`}
-                                            value={item._id}
-                                            className="peer sr-only"
-                                        />
-
-                                        <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-colors">
-                                            <div className="h-2 w-2 rounded-full bg-white" />
-                                        </div>
-
-                                        <div className="mt-4">
-                                            <div className="flex items-center justify-between">
-                                                <h4 className="text-lg font-bold text-gray-900 tracking-tight">
-                                                    {item.firstname}{" "}
-                                                    {item.lastname}
-                                                </h4>
-                                                <span className="hidden peer-checked:block text-xs font-bold text-blue-600 uppercase tracking-wider">
-                                                    Selected
-                                                </span>
-                                            </div>
-
-                                            <div className="mt-2 text-sm leading-6 text-gray-600">
-                                                <p>
-                                                    {" "}
-                                                    {
-                                                        item.customer_addr_one
-                                                    }{" "}
-                                                    ,{" "}
-                                                    {
-                                                        item.customer_addr_two
-                                                    }
-                                                </p>
-                                                <p>
-                                                    {" "}
-                                                    {
-                                                        item.customer_city
-                                                    }{" "}
-                                                    ,{" "}
-                                                    {
-                                                        item.customer_county
-                                                    }{" "}
-                                                    ,{" "}
-                                                    {
-                                                        item.customer_postcode
-                                                    }{" "}
-                                                </p>
-                                                <p className="font-medium text-gray-800">
-                                                    {" "}
-                                                    {
-                                                        item.customer_country
-                                                    }
-                                                </p>
-                                            </div>
-
-                                            <button
-                                                type="button"
-                                                className="group mt-4 flex items-center gap-1 text-sm font-semibold hover:text-blue-800 transition-colors"
-                                            >
-                                                Edit Address
-                                                <span className="transform transition-transform group-hover:translate-x-1">
-                                                    <Icon name="Arrowright" />
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <></>
-                    )}
+            <div className="flex gap-6 max-w-6xl mx-auto px-6 py-6">
+                {/* Left Column */}
+                <div className="w-4/5 flex flex-col gap-4">
+                    {/* Delivery Address */}
+                    {result.length > 0 && <ProductBuyPage customerData={result} />}
                 </div>
 
-                <div className="main-container-product-details w-1/5 border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    some dummy data
+                {/* Right Column */}
+                <div className="w-1/4">
+                    <div className="sticky top-6 bg-white rounded-3xl border border-gray-100 shadow-lg p-6">
+                        <h3 className="text-2xl font-bold mb-6">Order Summary</h3>
+
+                        {/* Product */}
+                        <div className="flex items-center gap-4 pb-5 border-b border-gray-100">
+                            <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center">
+                                <Image
+                                    src={
+                                        data.images?.[0]
+                                            ? `${process.env.NEXT_PUBLIC_CLOUDINARY_URL}${data.images[0]}`
+                                            : "https://flowbite.com/docs/images/products/apple-watch.png"
+                                    }
+                                    width={80}
+                                    height={80}
+                                    alt="product image"
+                                    className="object-contain"
+                                />
+                            </div>
+
+                            <div className="flex-1">
+                                <h4 className="font-semibold text-lg text-gray-900">{data.product_name}</h4>
+
+                                <p className="text-sm text-gray-500 mt-1">Quantity: {quantity}</p>
+
+                                <p className="text-xl font-bold mt-2 text-gray-900">${(data.product_price * quantity).toFixed(2)}</p>
+                            </div>
+                        </div>
+
+                        {/* Price Breakdown */}
+                        <div className="mt-6 space-y-3">
+                            <div className="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span>${(data.product_price * quantity).toFixed(2)}</span>
+                            </div>
+
+                            <div className="flex justify-between text-gray-600">
+                                <span>Shipping</span>
+                                <span>Free</span>
+                            </div>
+
+                            <div className="flex justify-between text-gray-600">
+                                <span>Tax</span>
+                                <span>$0.00</span>
+                            </div>
+
+                            <div className="border-t pt-4 flex justify-between">
+                                <span className="font-semibold text-lg">Total</span>
+                                <span className="font-bold text-2xl">${(data.product_price * quantity).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
