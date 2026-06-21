@@ -11,9 +11,7 @@ export default async function TopDeals() {
     return (
         <>
             <div className="topdeals-container p-3">
-                <h2 className="text-2xl font-bold mt-5 mb-4">
-                    Top Deals
-                </h2>
+                <h2 className="text-2xl font-bold mt-5 mb-4">Top Deals</h2>
                 <SwipperWrapper>
                     {(topDeals &&
                         topDeals.status == 200 &&
@@ -22,11 +20,17 @@ export default async function TopDeals() {
                                 <div className="relative w-full max-w-sm bg-neutral-primary-soft p-6 border border-default rounded-md shadow-xs flex flex-col">
                                     <Link href={`/product/${deal._id}`}>
                                         <div className="relative w-full aspect-square mb-6">
-                                            <Image src={
+                                            <Image
+                                                src={
                                                     deal.images?.[0]
                                                         ? `${process.env.NEXT_PUBLIC_CLOUDINARY_URL}${deal.images[0]}`
                                                         : "https://flowbite.com/docs/images/products/apple-watch.png"
-                                                } alt="product image" fill className="object-cover rounded-base" />
+                                                }
+                                                alt="product image"
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                fill
+                                                className="object-cover rounded-base"
+                                            />
                                         </div>
                                     </Link>
 
@@ -34,9 +38,7 @@ export default async function TopDeals() {
                                         <h5 className="text-xl text-heading font-semibold tracking-tight">
                                             {deal.product_name}
                                         </h5>
-                                        <p className="text-sm text-gray-500 line-clamp-2">
-                                            {deal.product_desc}
-                                        </p>
+                                        <p className="text-sm text-gray-500 line-clamp-2">{deal.product_desc}</p>
 
                                         <div className="flex items-center justify-between mt-auto pt-6">
                                             <span className="text-3xl font-extrabold text-heading">
@@ -50,7 +52,8 @@ export default async function TopDeals() {
                                     </div>
                                 </div>
                             </div>
-                        ))) || []}
+                        ))) ||
+                        []}
                 </SwipperWrapper>
             </div>
         </>

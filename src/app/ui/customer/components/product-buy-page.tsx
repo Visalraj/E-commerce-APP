@@ -3,8 +3,9 @@
 import { Customer } from "@/app/lib/definitions";
 import Icon from "@/app/ui/common/svg-tiles";
 import { AddAdressButtonWrapper } from "@/app/ui/common/buttons";
+import { useEffect, useState } from "react";
 
-export default function ProductBuyPage({ customerData }: { customerData: Customer[] | null }) {
+export  function ProductBuyPage({ customerData }: { customerData: Customer[] | null }) {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
     };
@@ -92,5 +93,27 @@ export default function ProductBuyPage({ customerData }: { customerData: Custome
                 </div>
             </div>
         </>
+    );
+}
+
+export function ProductPriceDisplay({ initialPrice }: { initialPrice: number }) {
+    const [price, setPrice] = useState(initialPrice);
+
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const customEvent = e as CustomEvent<{ price: number }>;
+            setPrice(customEvent.detail.price);
+        };
+
+        window.addEventListener("price:update", handler);
+
+        return () => {
+            window.removeEventListener("price:update", handler);
+        };
+    }, []);
+    return (
+        <p className="text-2xl mt-4 font-semibold text-blue-600" data-price-display>
+            ${price}
+        </p>
     );
 }

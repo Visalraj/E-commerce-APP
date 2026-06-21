@@ -4,6 +4,7 @@ import Skeleton from "@/app/ui/common/loading-skeleton";
 import Navbar from "@/app/ui/Home/navbar";
 import { AddToCartButton, BuyNowButton, QuantityInput } from "@/app/ui/common/buttons";
 import { isLoggedIn } from "@/app/Helpers/function";
+import { ProductPriceDisplay } from "@/app/ui/customer/components/product-buy-page";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -46,13 +47,7 @@ async function ProductDetails({ id }: { id: string }) {
                 </div>
                 <div className="flex-1">
                     <h1 className="text-4xl font-bold">{data.product_name}</h1>
-                    <p className="text-2xl mt-4 font-semibold text-blue-600" data-price-display>
-                        ${data.product_price}
-                    </p>
-                    <script
-                        dangerouslySetInnerHTML={{ __html: ` window.addEventListener("price:update", (e) => {
-                        document.querySelector("[data-price-display]").textContent = "$" + e.detail.price;}); `,  }}
-                    />
+                    <ProductPriceDisplay initialPrice={data.product_price} />
                     <p className="text-gray-600 mt-4">{data.product_desc}</p>
                     <div className="quantity-input mt-6">
                         <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">

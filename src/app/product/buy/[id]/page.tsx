@@ -4,7 +4,7 @@ import Navbar from "@/app/ui/Home/navbar";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import { getCustomerById, isLoggedIn } from "@/app/Helpers/function";
 import { Customer } from "@/app/lib/definitions";
-import ProductBuyPage from "@/app/ui/customer/components/product-buy-page";
+import {ProductBuyPage} from "@/app/ui/customer/components/product-buy-page";
 import Image from "next/image";
 import { cookies } from "next/headers";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -86,7 +86,7 @@ async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCu
 
                                 <p className="text-sm text-gray-500 mt-1">Quantity: {quantity}</p>
 
-                                <p className="text-xl font-bold mt-2 text-gray-900">${data.product_price}</p>
+                                <p className="text-xl font-bold mt-2 text-gray-900">${(data.product_price * quantity).toFixed(2)}</p>
                             </div>
                         </div>
 
@@ -94,7 +94,7 @@ async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCu
                         <div className="mt-6 space-y-3">
                             <div className="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span>${data.product_price}</span>
+                                <span>${(data.product_price * quantity).toFixed(2)}</span>
                             </div>
 
                             <div className="flex justify-between text-gray-600">
@@ -109,7 +109,7 @@ async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCu
 
                             <div className="border-t pt-4 flex justify-between">
                                 <span className="font-semibold text-lg">Total</span>
-                                <span className="font-bold text-2xl">${data.product_price}</span>
+                                <span className="font-bold text-2xl">${(data.product_price * quantity).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>

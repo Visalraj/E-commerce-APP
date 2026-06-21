@@ -74,6 +74,7 @@ export function AddAdressButtonWrapper(){
 export function QuantityInput({ price }: { price: number;}) {
     const handleChange = (value: string) => {
         const quantity = parseInt(value);
+        document.cookie = `selected_quantity=${quantity}; path=/; max-age=31536000`;
         const totalPrice = quantity * price;
         window.dispatchEvent(new CustomEvent("price:update", { detail: { price: totalPrice } }));
     };
