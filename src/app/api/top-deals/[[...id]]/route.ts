@@ -167,5 +167,80 @@ export async function POST(request: Request) {
                 { status: 500 },
             );
         }
+    }else if((type != '' || type != undefined) && type == 'user_cart'  && (userId!='' || userId !=undefined)){
+        try {
+            await connectDB();
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+            const cartData = await Users.aggregate([
+                // 1. Find the user
+                {
+                    $match: {
+                        _id: userObjectId,
+                    },
+                },
+
+                // 2. Get user's wishlist
+                {
+                    $lookup: {
+                        from: "user_wishlists",
+                        localField: "_id",
+                        foreignField: "userId",
+                        as: "wishlists",
+                    },
+                },
+
+                // 3. Get product details for all product IDs
+                {
+                    $unwind: {
+                        path: "$wishlists",
+                        preserveNullAndEmptyArrays: true,
+                    },
+                },
+
+                {
+                    $lookup: {
+                        from: "products",
+                        let: {
+                            productIds: "$wishlists.products",
+                        },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $in: ["$_id", "$$productIds"],
+                                    },
+                                },
+                            },
+
+                            // 4. Get images for each product
+                            {
+                                $lookup: {
+                                    from: "product_images",
+                                    localField: "_id",
+                                    foreignField: "product_id",
+                                    as: "product_images",
+                                },
+                            },
+                            {
+                                $sort: { createdAt: 1 },
+                            },
+                        ],
+                        as: "products",
+                    },
+                },
+
+                // 5. Return only required data
+                {
+                    $project: {
+                        _id: 0,
+                        products: 1,
+                    },
+                },
+            ]);
+            return NextResponse.json({ status: 200, data: cartData[0]?.products });
+        } catch (error) {
+            console.error("Database Error:", error);
+            return NextResponse.json({ status: 500, error: "Internal Server Error" }, { status: 500 });
+        }    
     }
 }

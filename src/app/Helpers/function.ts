@@ -50,12 +50,8 @@ export async function formatTime(time: string) {
 
 
     const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
-
-
     const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
     const formattedDateTime = `${formattedDate} ${formattedTime}`;
-
     return formattedDateTime;
 }
 export async function isLoggedIn() {
@@ -69,6 +65,15 @@ export async function redirectToLoginIfNotAuthenticated() {
     if (!session?.user) {
         redirect('/login');
     }
+}
+
+export async function trimCharacters(inputString: string): Promise<string> {
+const maxLength = 200;
+let trimmedString = inputString.substr(0, maxLength);
+
+//re-trim if we are in the middle of a word
+trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")))
+return trimmedString + (inputString.length > maxLength ? "..." : "");
 }
 
 export async function getCustomerById({ id }: { id: string }) {

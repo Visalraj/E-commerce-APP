@@ -32,6 +32,19 @@ export type TopDealsResponse = {
     data: Products_schema[];
 };
 
+export type CartData = {
+    _id: string;
+    product_name: string;
+    product_desc: string;
+    product_price: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    product_images: {
+        images: string[];
+    }[];
+};
+
 export type AuthState = {
     errors?: {  customer_email?: string[];
             customer_password?: string[];
