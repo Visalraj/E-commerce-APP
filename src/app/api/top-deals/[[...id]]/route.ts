@@ -221,6 +221,9 @@ export async function POST(request: Request) {
                                     as: "product_images",
                                 },
                             },
+                            {
+                                $sort: { createdAt: 1 },
+                            },
                         ],
                         as: "products",
                     },
