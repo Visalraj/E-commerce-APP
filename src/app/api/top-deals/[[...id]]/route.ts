@@ -189,7 +189,7 @@ export async function POST(request: Request) {
                     },
                 },
 
-                // 3. Get product details for all product IDs
+                // 3. Get wishlist
                 {
                     $unwind: {
                         path: "$wishlists",
@@ -197,22 +197,32 @@ export async function POST(request: Request) {
                     },
                 },
 
+                // 4. Get product details
                 {
                     $lookup: {
                         from: "products",
                         let: {
-                            productIds: "$wishlists.products",
+                            products: "$wishlists.products",
                         },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
-                                        $in: ["$_id", "$$productIds"],
+                                        $in: [
+                                            "$_id",
+                                            {
+                                                $map: {
+                                                    input: "$$products",
+                                                    as: "product",
+                                                    in: "$$product.productId",
+                                                },
+                                            },
+                                        ],
                                     },
                                 },
                             },
 
-                            // 4. Get images for each product
+                            // 5. Get images
                             {
                                 $lookup: {
                                     from: "product_images",
@@ -221,15 +231,45 @@ export async function POST(request: Request) {
                                     as: "product_images",
                                 },
                             },
+
                             {
-                                $sort: { createdAt: 1 },
+                                $sort: {
+                                    createdAt: 1,
+                                },
+                            },
+
+                            // 6. Add quantity to product
+                            {
+                                $addFields: {
+                                    quantity: {
+                                        $let: {
+                                            vars: {
+                                                wishlistProduct: {
+                                                    $arrayElemAt: [
+                                                        {
+                                                            $filter: {
+                                                                input: "$$products",
+                                                                as: "product",
+                                                                cond: {
+                                                                    $eq: ["$$product.productId", "$_id"],
+                                                                },
+                                                            },
+                                                        },
+                                                        0,
+                                                    ],
+                                                },
+                                            },
+                                            in: "$$wishlistProduct.quantity",
+                                        },
+                                    },
+                                },
                             },
                         ],
                         as: "products",
                     },
                 },
 
-                // 5. Return only required data
+                // 7. Return only required data
                 {
                     $project: {
                         _id: 0,

@@ -114,7 +114,7 @@ export async function createCustomer(formData: FormData) {
     }
 }
 
-export async function addToCart({ id }: { id?: string }) {
+export async function addToCart({ id, quantity }: { id?: string; quantity: number }) {
     const productId = id || 'unknown';
     if (!mongoose.Types.ObjectId.isValid(productId)) {
         return NextResponse.json(
@@ -129,11 +129,17 @@ export async function addToCart({ id }: { id?: string }) {
         await UserWishlist.findOneAndUpdate(
             { userId: new mongoose.Types.ObjectId(user.id) },
             {
-                $addToSet: {
-                    products: new mongoose.Types.ObjectId(productId),
+                $push: {
+                    products: {
+                        productId: new mongoose.Types.ObjectId(productId),
+                        quantity: quantity,
+                    },
                 },
             },
-            { upsert: true, new: true },
+            {
+                upsert: true,
+                new: true,
+            },
         );
 
         console.log("Product added to wishlist successfully");

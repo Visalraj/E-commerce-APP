@@ -16,14 +16,14 @@ export function CreateButton() {
     );
 }
 
-export function AddToCartButton({ id, isWishlisted }: { id?: string; isWishlisted?: boolean }) {
+export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; isWishlisted?: boolean; quantity: number }) {
     const [wishlisted, setWishlisted] = useState(isWishlisted || false);
 
     const handleWishlistClick = async () => {
         if (!id) return;
         try {
             
-            const response = !wishlisted ? await addToCart({ id }) : await removeFromCart({ id });
+            const response = !wishlisted ? await addToCart({ id, quantity }) : await removeFromCart({ id });
             response.status && setWishlisted((prev) => !prev);
         } catch (err) {
             console.error("Client-side error:", err);
@@ -71,12 +71,13 @@ export function AddAdressButtonWrapper(){
 
 }
 
-export function QuantityInput({ price }: { price: number;}) {
+export function QuantityInput({ price, onQuantityChange }: { price: number; onQuantityChange: (quantity: number) => void }) {
     const handleChange = (value: string) => {
         const quantity = parseInt(value);
         document.cookie = `selected_quantity=${quantity}; path=/; max-age=31536000`;
         const totalPrice = quantity * price;
         window.dispatchEvent(new CustomEvent("price:update", { detail: { price: totalPrice } }));
+        onQuantityChange(quantity);
     };
 
     return (
