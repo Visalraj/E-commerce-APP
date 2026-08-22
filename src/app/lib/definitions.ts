@@ -43,6 +43,7 @@ export type CartData = {
     product_images: {
         images: string[];
     }[];
+    quantity: number;
 };
 
 export type AuthState = {

@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Skeleton from "@/app/ui/common/loading-skeleton";
 import Navbar from "@/app/ui/Home/navbar";
-import { AddToCartButton, BuyNowButton, QuantityInput } from "@/app/ui/common/buttons";
 import { isLoggedIn } from "@/app/Helpers/function";
 import { ProductPriceDisplay } from "@/app/ui/customer/components/product-buy-page";
+import ProductActions from "@/app/ui/customer/components/product-action";
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -49,16 +49,7 @@ async function ProductDetails({ id }: { id: string }) {
                     <h1 className="text-4xl font-bold">{data.product_name}</h1>
                     <ProductPriceDisplay initialPrice={data.product_price} />
                     <p className="text-gray-600 mt-4">{data.product_desc}</p>
-                    <div className="quantity-input mt-6">
-                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                            Quantity
-                        </label>
-                        <QuantityInput price={data.product_price} />
-                    </div>
-                    <div className="wrap-btns pt-4 mt-3 flex gap-4">
-                        <AddToCartButton id={data._id} isWishlisted={data.isInWishlist} />
-                        <BuyNowButton id={data._id} />
-                    </div>
+                   <ProductActions id={data._id} price={data.product_price} isWishlisted={data.isWishlisted} />
                 </div>
             </div>
         </main>

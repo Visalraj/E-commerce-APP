@@ -30,7 +30,7 @@ export async function CartDetails({ id }: { id: string | undefined }) {
         cache: "no-store",
     });
     const cartData = await response.json();
-    
+    console.log("cartData", cartData);
     const result = cartData.data || [];
     if (!response.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
 
@@ -58,6 +58,16 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                                     <div className="card-body">
                                         <h5 className="card-title font-bold">{(item.product_name).charAt(0).toUpperCase() + item.product_name.slice(1)}</h5>
                                         <p className="card-text">{trimCharacters(item.product_desc)}</p>
+                                        <div className="flex flex-row gap-4">
+                                            <p className="card-text mt-3">Quantity: </p>
+                                            <select className="form-select form-select-sm mt-2" aria-label=".form-select-sm example" defaultValue={item.quantity} style={{ width: "5rem" }}>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                            </select>
+                                        </div>
                                         <hr className="my-4" />
                                         <p className="card-text">
                                             <button type="button"  className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2" style={{ width: "13rem" }} >
