@@ -9,9 +9,12 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    console.log("productUserId:", id);
+    const quantity = id.split("____")[1];
     //await redirectToLoginIfNotAuthenticated();
     const user = await isLoggedIn();
-    const productUserId = id + "____" + user?.id;
+    const productUserId = id.split("____")[0] + "____" + user?.id;
+   
 
     const response = user?.id ? await getCustomerById({ id: user.id }) : null;
     const getCustomerData = response?.data[0] || null;
@@ -19,14 +22,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <div className="min-h-screen bg-[#FDFDFD]">
             <Navbar />
             <Suspense fallback={<Skeleton />}>
-                <ProductDetails id={productUserId} getCustomerData={getCustomerData} userId={user?.id} />
+                <ProductDetails id={productUserId} getCustomerData={getCustomerData} userId={user?.id} quantity={quantity} />
             </Suspense>
         </div>
     );
 }
 
 
-async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCustomerData: Customer | null; userId: string | undefined;}) {
+async function ProductDetails({id,getCustomerData, userId, quantity}: { id: string; getCustomerData: Customer | null; userId: string | undefined; quantity: string }) {
     const res = await fetch(`${process.env.API_URL}top-deals/${id}`, {
         cache: "no-store",
     });
@@ -48,8 +51,6 @@ async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCu
     if (!res.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
     const { data } = await res.json();
     if (!data) return <div className="p-20 text-center">No data found</div>;
-
-    const quantity = parseInt((await cookies()).get("selected_quantity")?.value ?? "1");
 
     return (
         <>
@@ -86,7 +87,7 @@ async function ProductDetails({id,getCustomerData, userId,}: { id: string; getCu
 
                                 <p className="text-sm text-gray-500 mt-1">Quantity: {quantity}</p>
 
-                                <p className="text-xl font-bold mt-2 text-gray-900">${(data.product_price * quantity).toFixed(2)}</p>
+                                <p className="text-xl font-bold mt-2 text-gray-900">${(Number(data.product_price) * Number(quantity)).toFixed(2)}</p>
                             </div>
                         </div>
 

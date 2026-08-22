@@ -5,7 +5,6 @@ import { addToCart, removeFromCart } from "@/app/lib/actions-customer";
 import Icon from "@/app/ui/common/svg-tiles";
 import AddressModal from "../customer/components/modals";
 
-
 export function CreateButton() {
     return (
         <>
@@ -38,14 +37,23 @@ export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; is
     );
 }
 
-export function BuyNowButton({ id }: { id?: string }) {
+export function BuyNowButton({ id,className,style,quantity }: { id?: string; className?: string; style?: React.CSSProperties; quantity: number }) {
     return (
-        <Link href={`/product/buy/${id}`}>
-            <button className="PrimaryBtn flex items-center gap-2">
+        <Link href={`/product/buy/${(id+'____'+quantity)}`} >
+            <button className={`${className ? className : "PrimaryBtn flex items-center gap-2"} `} style={style}>
                 <Icon name="Shoppingbag" />
                 Buy Now
             </button>
         </Link>
+    );
+}
+
+export function RemoveFromCartButton({ id,className,style }: { id?: string; className?: string; style?: React.CSSProperties }) {
+    return (
+        <button id={id} className={`${className ? className : "PrimaryBtn flex items-center gap-2"} `} style={style}>
+            <Icon name="Cart" />
+            Remove
+        </button>
     );
 }
 
@@ -71,7 +79,7 @@ export function AddAdressButtonWrapper(){
 
 }
 
-export function QuantityInput({ price, onQuantityChange }: { price: number; onQuantityChange: (quantity: number) => void }) {
+export function QuantityInput({ price, onQuantityChange, currentQuantity }: { price: number; onQuantityChange: (quantity: number) => void; currentQuantity: number }) {
     const handleChange = (value: string) => {
         const quantity = parseInt(value);
         document.cookie = `selected_quantity=${quantity}; path=/; max-age=31536000`;
@@ -81,7 +89,7 @@ export function QuantityInput({ price, onQuantityChange }: { price: number; onQu
     };
 
     return (
-        <select  name="quantity"  id="quantity" className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm"  defaultValue="1" onChange={(e) => handleChange(e.target.value)}>
+        <select  name="quantity"  id="quantity" className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm"  defaultValue={currentQuantity} onChange={(e) => handleChange(e.target.value)}>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>

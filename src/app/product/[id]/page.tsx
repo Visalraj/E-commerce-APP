@@ -47,9 +47,9 @@ async function ProductDetails({ id }: { id: string }) {
                 </div>
                 <div className="flex-1">
                     <h1 className="text-4xl font-bold">{data.product_name}</h1>
-                    <ProductPriceDisplay initialPrice={data.product_price} />
+                    <ProductPriceDisplay initialPrice={(data.quantity) === undefined ? data.product_price : data.product_price * data.quantity} />
                     <p className="text-gray-600 mt-4">{data.product_desc}</p>
-                   <ProductActions id={data._id} price={data.product_price} isWishlisted={data.isWishlisted} />
+                   <ProductActions id={data._id} price={data.product_price} isWishlisted={data.isInWishlist} currentQuantity={(data.quantity) === undefined ? 1 : data.quantity} />
                 </div>
             </div>
         </main>

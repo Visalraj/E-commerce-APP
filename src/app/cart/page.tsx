@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import Skeleton from "../ui/common/loading-skeleton";
 import { CartData } from "../lib/definitions";
 import Image from "next/image";
-import Icon from "../ui/common/svg-tiles";
+import { BuyNowButton, RemoveFromCartButton } from "../ui/common/buttons";
+import Link from "next/link";
 export default async function CartPage() {
     const user = await isLoggedIn();
     return (
@@ -30,7 +31,6 @@ export async function CartDetails({ id }: { id: string | undefined }) {
         cache: "no-store",
     });
     const cartData = await response.json();
-    console.log("cartData", cartData);
     const result = cartData.data || [];
     if (!response.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
 
@@ -38,7 +38,8 @@ export async function CartDetails({ id }: { id: string | undefined }) {
         <main className="container mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row gap-12">
                 <div className="flex flex-col md:flex-col gap-12 bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100 w-3/5">
-                    {result.map((item: CartData, index: number) => (
+                    {result.map((item: CartData, index: number) => 
+                    (
                         <div key={index} className="card mb-3" style={{ maxWidth: "740px" }}>
                             <div className="row g-0">
                                 <div className="col-md-4 m-auto">
@@ -56,11 +57,16 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                                 </div>
                                 <div className="col-md-8">
                                     <div className="card-body">
-                                        <h5 className="card-title font-bold">{(item.product_name).charAt(0).toUpperCase() + item.product_name.slice(1)}</h5>
+                                        <Link href={`/product/${item._id}`}>
+                                            <h5 className="card-title font-bold">
+                                                {item.product_name.charAt(0).toUpperCase() + item.product_name.slice(1)}
+                                            </h5>
+                                        </Link>
                                         <p className="card-text">{trimCharacters(item.product_desc)}</p>
                                         <div className="flex flex-row gap-4">
                                             <p className="card-text mt-3">Quantity: </p>
-                                            <select className="form-select form-select-sm mt-2" aria-label=".form-select-sm example" defaultValue={item.quantity} style={{ width: "5rem" }}>
+                                            <select  className="form-select form-select-sm mt-2" aria-label=".form-select-sm example"
+                                                defaultValue={item.quantity}   style={{ width: "5rem" }}  >
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
@@ -68,16 +74,18 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                                                 <option value="5">5</option>
                                             </select>
                                         </div>
+                                        <p className="card-text mt-3">
+                                            Price:
+                                            <span className="font-bold">
+                                                {" "}
+                                                ${(item.product_price * item.quantity).toFixed(2)}
+                                            </span>
+                                        </p>
                                         <hr className="my-4" />
                                         <p className="card-text">
-                                            <button type="button"  className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2" style={{ width: "13rem" }} >
-                                                <Icon name="Cart" />
-                                                <span>Remove</span>
-                                            </button>
-                                           <button type="button"  className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2" style={{ width: "13rem" }} >
-                                                <Icon name="Buy" />
-                                                <span>Buy</span>
-                                            </button>
+                                            <RemoveFromCartButton id={item._id} className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2" style={{ width: "13rem" }} />
+                                           
+                                            <BuyNowButton id={item._id} className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2" style={{ width: "13rem" }} quantity={(item.quantity)} />
                                         </p>
                                     </div>
                                 </div>
