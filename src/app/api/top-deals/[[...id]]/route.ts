@@ -22,11 +22,15 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
             }     
             
             const product = await Products.aggregate([
+                // 1. Find the product
                 {
                     $match: {
                         _id: new mongoose.Types.ObjectId(productId),
+                        isActive: true,
                     },
                 },
+
+                // 2. Get product images
                 {
                     $lookup: {
                         from: "product_images",
@@ -35,60 +39,135 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
                         as: "productImages",
                     },
                 },
+
+                // 3. Get the first image
                 {
                     $addFields: {
                         images: {
-                            $arrayElemAt: [
-                                "$productImages.images",
-                                0,
-                            ],
+                            $arrayElemAt: ["$productImages.images", 0],
                         },
                     },
                 },
 
-                { $project: { productImages: 0 } },
+                // 4. Remove productImages because we only need images
                 {
-                    $lookup: {
-                        from: "user_wishlists",
-                        let: { prodId: "$_id" },
-                        pipeline: user_id
-                            ? [
-                                  {
-                                      $match: {
-                                          $expr: {
-                                              $and: [
-                                                  {
-                                                      $eq: [
-                                                          "$userId",
-                                                          new mongoose.Types.ObjectId(
-                                                              user_id,
-                                                          ),
-                                                      ],
-                                                  },
-                                                  {
-                                                      $in: [
-                                                          "$$prodId",
-                                                          "$products",
-                                                      ],
-                                                  },
-                                              ],
-                                          },
-                                      },
-                                  },
-                              ]
-                            : [],
-                        as: "wishlistInfo",
-                    },
-                },
-                {
-                    $addFields: {
-                        isInWishlist: user_id
-                            ? { $gt: [{ $size: "$wishlistInfo" }, 0] }
-                            : false,
+                    $project: {
+                        productImages: 0,
                     },
                 },
 
-                { $project: { wishlistInfo: 0 } },
+                // 5. Check whether this product is in user's wishlist
+                {
+                    $lookup: {
+                        from: "user_wishlists",
+
+                        let: {
+                            productId: "$_id",
+                            userId: user_id ? new mongoose.Types.ObjectId(user_id) : null,
+                        },
+
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            // Match the user
+                                            {
+                                                $eq: ["$userId", "$$userId"],
+                                            },
+
+                                            // Check if productId exists
+                                            // inside products[].productId
+                                            {
+                                                $gt: [
+                                                    {
+                                                        $size: {
+                                                            $filter: {
+                                                                input: {
+                                                                    $ifNull: ["$products", []],
+                                                                },
+
+                                                                as: "item",
+
+                                                                cond: {
+                                                                    $eq: ["$$item.productId", "$$productId"],
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                    0,
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        ],
+
+                        as: "wishlistInfo",
+                    },
+                },
+
+                // 6. Convert wishlistInfo into true/false
+                {
+                    $addFields: {
+                        isInWishlist: {
+                            $gt: [
+                                {
+                                    $size: {
+                                        $ifNull: ["$wishlistInfo", []],
+                                    },
+                                },
+                                0,
+                            ],
+                        },
+
+                        quantity: {
+                            $let: {
+                                vars: {
+                                    wishlistProducts: {
+                                        $ifNull: [
+                                            {
+                                                $arrayElemAt: ["$wishlistInfo.products", 0],
+                                            },
+                                            [],
+                                        ],
+                                    },
+                                },
+
+                                in: {
+                                    $let: {
+                                        vars: {
+                                            wishlistProduct: {
+                                                $arrayElemAt: [
+                                                    {
+                                                        $filter: {
+                                                            input: "$$wishlistProducts",
+                                                            as: "item",
+                                                            cond: {
+                                                                $eq: ["$$item.productId", "$_id"],
+                                                            },
+                                                        },
+                                                    },
+                                                    0,
+                                                ],
+                                            },
+                                        },
+
+                                        in: "$$wishlistProduct.quantity",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+
+                // 7. Remove wishlistInfo from response
+                {
+                    $project: {
+                        wishlistInfo: 0,
+                    },
+                },
             ]);
 
 

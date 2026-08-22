@@ -162,20 +162,31 @@ export async function removeFromCart({ id }: { id?: string }) {
     const user = await isLoggedIn();
     if (!user) return redirect("/login");
     try {
-        await connectDB();
-        const wishlist = await UserWishlist.findOneAndUpdate(
-            { userId: new mongoose.Types.ObjectId(user.id) },
-            {
-                $pull: {
-                    products: new mongoose.Types.ObjectId(productId),
-                },
-            },
-            { new: true },
-        );
-        if (wishlist && wishlist.products.length === 0) 
-            await UserWishlist.deleteOne({ _id: wishlist._id });
+       await connectDB();
 
-        console.log("Product removed from wishlist successfully");
+       const wishlist = await UserWishlist.findOneAndUpdate(
+           {
+               userId: new mongoose.Types.ObjectId(user.id),
+           },
+           {
+               $pull: {
+                   products: {
+                       productId: new mongoose.Types.ObjectId(productId),
+                   },
+               },
+           },
+           {
+               new: true,
+           },
+       );
+
+       if (wishlist && wishlist.products.length === 0) {
+           await UserWishlist.deleteOne({
+               _id: wishlist._id,
+           });
+       }
+
+       console.log("Product removed from wishlist successfully");
         return { status: true, message: "Product removed from wishlist" };      
     } catch (error) {
         console.error("Error removing product from wishlist:", error);

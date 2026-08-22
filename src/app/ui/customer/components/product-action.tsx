@@ -7,11 +7,11 @@ type ProductActionsProps = {
     id: string;
     price: number;
     isWishlisted: boolean;
+    currentQuantity: number;
 };
 
-export default function ProductActions({ id, price, isWishlisted }: ProductActionsProps) {
-    const [quantity, setQuantity] = useState(1);
-
+export default function ProductActions({ id, price, isWishlisted, currentQuantity }: ProductActionsProps) {
+    const [quantity, setQuantity] = useState(currentQuantity);
     return (
         <>
             <div className="quantity-input mt-6">
@@ -19,12 +19,12 @@ export default function ProductActions({ id, price, isWishlisted }: ProductActio
                     Quantity
                 </label>
 
-                <QuantityInput price={price} onQuantityChange={setQuantity} />
+                <QuantityInput price={price} onQuantityChange={setQuantity} currentQuantity={currentQuantity} />
             </div>
 
             <div className="wrap-btns pt-4 mt-3 flex gap-4">
                 <AddToCartButton id={id} isWishlisted={isWishlisted} quantity={quantity} />
-                <BuyNowButton id={id} />
+                <BuyNowButton id={id} quantity={(quantity)} />
             </div>
         </>
     );
