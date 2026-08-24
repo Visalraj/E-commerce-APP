@@ -12,10 +12,9 @@ export async function middleware(request: NextRequest) {
         const redirectUrl = token ? '/dashboard' : '/login';
         return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
-
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/login', '/dashboard']
+    matcher: ['/login', '/dashboard','/']
 }
