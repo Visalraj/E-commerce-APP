@@ -50,7 +50,7 @@ export function BuyNowButton({ id,className,style,quantity }: { id?: string; cla
 
 export function RemoveFromCartButton({ id,className,style }: { id?: string; className?: string; style?: React.CSSProperties }) {
     return (
-        <button id={id} className={`${className ? className : "PrimaryBtn flex items-center gap-2"} `} style={style}>
+        <button id={id} className={`${className ? className : "PrimaryBtn flex items-center gap-2"} `} style={style} onClick={async ()=>await removeFromCart({ id: id || "" })}>
             <Icon name="Cart" />
             Remove
         </button>
@@ -99,3 +99,13 @@ export function QuantityInput({ price, onQuantityChange, currentQuantity }: { pr
     );
 }
 
+export function ProceedToCheckoutButton() {
+    return (
+        <button
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 shadow-sm active:scale-95"
+            
+        >
+            Proceed to Checkout
+        </button>
+    );
+}
