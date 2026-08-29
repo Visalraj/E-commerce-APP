@@ -8,9 +8,8 @@ import {ProductBuyPage} from "@/app/ui/customer/components/product-buy-page";
 import Image from "next/image";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    console.log("productUserId:", id);
     const quantity = id.split("____")[1];
-    //await redirectToLoginIfNotAuthenticated();
+   // await redirectToLoginIfNotAuthenticated();
     const user = await isLoggedIn();
     const productUserId = id.split("____")[0] + "____" + user?.id;
    
@@ -87,7 +86,8 @@ async function ProductDetails({id,getCustomerData, userId, quantity}: { id: stri
                                 <p className="text-sm text-gray-500 mt-1">Quantity: {quantity}</p>
 
                                 <p className="text-xl font-bold mt-2 text-gray-900">
-                                    ${(Number(data.product_price) * Number(quantity)).toFixed(2)}
+                                    {`${process.env.PLATFORM_CURRENCY_SYMBOL}`}
+                                    {(Number(data.product_price) * Number(quantity)).toFixed(2)}
                                 </p>
                             </div>
                         </div>
@@ -96,7 +96,10 @@ async function ProductDetails({id,getCustomerData, userId, quantity}: { id: stri
                         <div className="mt-6 space-y-3">
                             <div className="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span>${(Number(data.product_price) * Number(quantity)).toFixed(2)}</span>
+                                <span>
+                                    {`${process.env.PLATFORM_CURRENCY_SYMBOL}`}
+                                    {(Number(data.product_price) * Number(quantity)).toFixed(2)}
+                                </span>
                             </div>
 
                             <div className="flex justify-between text-gray-600">
@@ -106,13 +109,17 @@ async function ProductDetails({id,getCustomerData, userId, quantity}: { id: stri
 
                             <div className="flex justify-between text-gray-600">
                                 <span>Tax</span>
-                                <span>$0.00</span>
+                                <span>
+                                    {`${process.env.PLATFORM_CURRENCY_SYMBOL}`}
+                                    0.00
+                                </span>
                             </div>
 
                             <div className="border-t pt-4 flex justify-between">
                                 <span className="font-semibold text-lg">Total</span>
                                 <span className="font-bold text-2xl">
-                                    ${(Number(data.product_price) * Number(quantity)).toFixed(2)}
+                                    {`${process.env.PLATFORM_CURRENCY_SYMBOL}`}
+                                    {(Number(data.product_price) * Number(quantity)).toFixed(2)}
                                 </span>
                             </div>
                         </div>

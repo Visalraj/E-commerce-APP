@@ -1,11 +1,13 @@
 import Navbar from "@/app/ui/Home/navbar";
-import { isLoggedIn,trimCharacters } from "../Helpers/function";
+import {  isLoggedIn,trimCharacters } from "../Helpers/function";
 import { Suspense } from "react";
 import Skeleton from "../ui/common/loading-skeleton";
 import { CartData } from "../lib/definitions";
 import Image from "next/image";
 import { BuyNowButton, ProceedToCheckoutButton, RemoveFromCartButton } from "../ui/common/buttons";
 import Link from "next/link";
+import ProductActions from "@/app/ui/customer/components/product-action";
+
 export default async function CartPage() {
     const user = await isLoggedIn();
     return (
@@ -63,28 +65,10 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                                             </h5>
                                         </Link>
                                         <p className="card-text">{trimCharacters(item.product_desc)}</p>
-                                        <div className="flex flex-row gap-4">
-                                            <p className="card-text mt-3">Quantity: </p>
-                                            <select
-                                                className="form-select form-select-sm mt-2"
-                                                aria-label=".form-select-sm example"
-                                                defaultValue={item.quantity}
-                                                style={{ width: "5rem" }}
-                                            >
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                            </select>
-                                        </div>
-                                        <p className="card-text mt-3">
-                                            Price:
-                                            <span className="font-bold">
-                                                {" "}
-                                                {`${process.env.PLATFORM_CURRENCY_SYMBOL}${(item.product_price * item.quantity).toFixed(2)}`}
-                                            </span>
-                                        </p>
+                                            
+                                        <ProductActions from="cart" price={item.product_price}  currentQuantity={item.quantity}   className="form-select form-select-sm mt-2" style={{ width: "5rem" }}/>
+
+
                                         <hr className="my-4" />
                                         <p className="card-text">
                                             <RemoveFromCartButton
@@ -133,7 +117,7 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                                         </div>
 
                                         <div className="mt-2">
-                                            <ProceedToCheckoutButton />
+                                            <ProceedToCheckoutButton userid={userId} from_page="cart" />
                                         </div>
                                     </div>
                                 </div>

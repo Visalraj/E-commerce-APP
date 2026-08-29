@@ -4,14 +4,45 @@ import { useState } from "react";
 import { QuantityInput, AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
 
 type ProductActionsProps = {
-    id: string;
+    id?: string;
     price: number;
-    isWishlisted: boolean;
+    isWishlisted?: boolean;
     currentQuantity: number;
+    from?: "product" | "cart";
+    style?: React.CSSProperties;
+    className?: string;
 };
 
-export default function ProductActions({ id, price, isWishlisted, currentQuantity }: ProductActionsProps) {
+export default function ProductActions({ id, price, isWishlisted, currentQuantity, from="product" , style, className }: ProductActionsProps) {
     const [quantity, setQuantity] = useState(currentQuantity);
+    if(from === "cart"){
+        return (
+            <>
+                <div className="flex flex-col gap-3">
+                    {/* Quantity Row */}
+                    <div className="flex items-center  gap-4">
+                        <span className="">Quantity:</span>
+
+                        <QuantityInput
+                            price={price}
+                            currentQuantity={currentQuantity}
+                            onQuantityChange={setQuantity}
+                            from={from}
+                            style={style}
+                            className={className}
+                        />
+                    </div>
+
+                    {/* Price Row */}
+                    <div className="flex items-center  gap-4">
+                        <span className="">Price:</span>
+
+                        <span className="font-bold text-base">{`${process.env.NEXT_PUBLIC_PLATFORM_CURRENCY_SYMBOL}${(price * quantity).toFixed(2)}`}</span>
+                    </div>
+                </div>
+            </>
+        );
+    }
     return (
         <>
             <div className="quantity-input mt-6">
@@ -19,7 +50,7 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
                     Quantity
                 </label>
 
-                <QuantityInput price={price} onQuantityChange={setQuantity} currentQuantity={currentQuantity} />
+                <QuantityInput price={price} onQuantityChange={setQuantity} currentQuantity={currentQuantity} from={from} />
             </div>
 
             <div className="wrap-btns pt-4 mt-3 flex gap-4">
