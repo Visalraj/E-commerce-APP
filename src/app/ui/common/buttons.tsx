@@ -79,17 +79,22 @@ export function AddAdressButtonWrapper(){
 
 }
 
-export function QuantityInput({ price, onQuantityChange, currentQuantity }: { price: number; onQuantityChange: (quantity: number) => void; currentQuantity: number }) {
+export function QuantityInput({ price, onQuantityChange, currentQuantity, from, style, className}: {price: number; onQuantityChange: (quantity: number) => void; currentQuantity: number; from: "product" | "cart"; style?: React.CSSProperties; className?: string;}) {
     const handleChange = (value: string) => {
         const quantity = parseInt(value);
-        document.cookie = `selected_quantity=${quantity}; path=/; max-age=31536000`;
         const totalPrice = quantity * price;
-        window.dispatchEvent(new CustomEvent("price:update", { detail: { price: totalPrice } }));
+        
+        if (from === "product")
+            window.dispatchEvent(new CustomEvent("price:update", { detail: { price: totalPrice } }));
+        else 
+            <PriceDisplay quantity={quantity} currentPrice={price} />;
+
         onQuantityChange(quantity);
     };
 
     return (
-        <select  name="quantity"  id="quantity" className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm"  defaultValue={currentQuantity} onChange={(e) => handleChange(e.target.value)}>
+        <select  name="quantity" id="quantity" className={className || "mt-1 block w-24 border border-gray-300 rounded-md shadow-sm"}
+            defaultValue={currentQuantity} onChange={(e) => handleChange(e.target.value)} style={style} >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -99,13 +104,36 @@ export function QuantityInput({ price, onQuantityChange, currentQuantity }: { pr
     );
 }
 
-export function ProceedToCheckoutButton() {
+export function PriceDisplay({ quantity, currentPrice }: { quantity: number; currentPrice: number; }) {
     return (
-        <button
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 shadow-sm active:scale-95"
-            
-        >
-            Proceed to Checkout
-        </button>
+        <p className="card-text mt-3">
+            Price:
+            <span className="font-bold">
+                {" "}
+                {(currentPrice * quantity).toFixed(2)}
+            </span>
+        </p>
+    );
+}
+
+
+
+const handleCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log( event);
+}
+
+export function ProceedToCheckoutButton({ userid, from_page }: { userid?: string; from_page?: string }) {
+    return (
+        <form onSubmit={handleCheckout} method="POST">
+            <input type="hidden" name="userId" value={userid} />
+            <input type="hidden" name="from_page" value={from_page} />
+            <input type="hidden" name="action" value="checkout" />
+
+            <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 shadow-sm active:scale-95">
+                Proceed to Checkout
+            </button>
+        </form>
+       
     );
 }
