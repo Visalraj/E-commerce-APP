@@ -80,7 +80,9 @@ export function AddAdressButtonWrapper(){
 }
 
 export function QuantityInput({ price, onQuantityChange, currentQuantity, from, style, className}: {price: number; onQuantityChange: (quantity: number) => void; currentQuantity: number; from: "product" | "cart"; style?: React.CSSProperties; className?: string;}) {
+
     const handleChange = (value: string) => {
+        
         const quantity = parseInt(value);
         const totalPrice = quantity * price;
         
@@ -94,7 +96,7 @@ export function QuantityInput({ price, onQuantityChange, currentQuantity, from, 
 
     return (
         <select  name="quantity" id="quantity" className={className || "mt-1 block w-24 border border-gray-300 rounded-md shadow-sm"}
-            defaultValue={currentQuantity} onChange={(e) => handleChange(e.target.value)} style={style} >
+            value={currentQuantity} onChange={(e) => handleChange(e.target.value)} style={style} >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>

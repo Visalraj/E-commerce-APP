@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { QuantityInput, AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
+import { useCart } from "@/app/context/CartContext";
+
 
 type ProductActionsProps = {
     id?: string;
@@ -15,6 +17,17 @@ type ProductActionsProps = {
 
 export default function ProductActions({ id, price, isWishlisted, currentQuantity, from="product" , style, className }: ProductActionsProps) {
     const [quantity, setQuantity] = useState(currentQuantity);
+    const { updateQuantity } = useCart();
+
+    const handleQuantityChange = (newQuantity: number) => {
+        setQuantity(newQuantity);
+
+        if (from === "cart" && id) {
+            updateQuantity(id, newQuantity);
+        }
+    };
+
+
     if(from === "cart"){
         return (
             <>
@@ -25,8 +38,8 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
 
                         <QuantityInput
                             price={price}
-                            currentQuantity={currentQuantity}
-                            onQuantityChange={setQuantity}
+                            currentQuantity={quantity}
+                            onQuantityChange={handleQuantityChange}
                             from={from}
                             style={style}
                             className={className}
@@ -50,12 +63,12 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
                     Quantity
                 </label>
 
-                <QuantityInput price={price} onQuantityChange={setQuantity} currentQuantity={currentQuantity} from={from} />
+                <QuantityInput price={price}   onQuantityChange={handleQuantityChange} currentQuantity={quantity} from={from}  />
             </div>
 
             <div className="wrap-btns pt-4 mt-3 flex gap-4">
                 <AddToCartButton id={id} isWishlisted={isWishlisted} quantity={quantity} />
-                <BuyNowButton id={id} quantity={(quantity)} />
+                <BuyNowButton id={id} quantity={quantity} />
             </div>
         </>
     );
