@@ -21,8 +21,7 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
 
     const handleQuantityChange = (newQuantity: number) => {
         setQuantity(newQuantity);
-
-        if (from === "cart" && id) {
+        if (id) {
             updateQuantity(id, newQuantity);
         }
     };
