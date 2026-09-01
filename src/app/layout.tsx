@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "./globals.css";
+import { NotificationProvider } from "./context/NotificationContext";
 
 
 export const metadata: Metadata = {
@@ -12,7 +13,9 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
 	return (
 		<html lang="en">
 			<body className={""}>
-				{children}
+				<NotificationProvider>
+					{children}
+				</NotificationProvider>
 			</body>
 		</html>
 	);

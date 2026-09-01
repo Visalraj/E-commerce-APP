@@ -1,22 +1,30 @@
 "use client";
-import {useState } from "react";
+import {useEffect, useState } from "react";
 import Link from "next/link";
 import { addToCart, removeFromCart } from "@/app/lib/actions-customer";
 import Icon from "@/app/ui/common/svg-tiles";
 import AddressModal from "../customer/components/modals";
+import { useNotification } from "@/app/context/NotificationContext";
 
+export default function Notifications({from,onClose}: {from: string; onClose: () => void;}) {
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }, []);
+    const message = from === "RemoveFromCartButton" ? "Item removed from cart successfully." : "Account created successfully.";
 
-export default function Notifications({onClose}: {onClose: () => void;}) {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-[9999]">
 
-            <div id="toast-simple"  onClick={onClose} className="absolute top-24 right-4 flex items-center w-[calc(100%-2rem)] max-w-sm p-4 bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-in-right pointer-events-auto" role="alert">
+            <div id="toast-simple" className={`${from === "RemoveFromCartButton" ? "top-20" : "top-24"} absolute right-4 flex items-center w-[calc(100%-2rem)] max-w-sm p-4 bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-in-right pointer-events-auto`} role="alert">
 
                 <svg className="w-5 h-5 text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/></svg>
             
-                <div className="ms-2.5 text-sm border-s border-default ps-3.5">Message sent successfully.</div>
+                <div className="ms-2.5 text-sm border-s border-default ps-3.5">{message}</div>
 
-                <button type="button" className="ms-auto flex items-center justify-center text-body hover:text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded text-sm h-8 w-8 focus:outline-none" data-dismiss-target="#toast-simple" aria-label="Close">
+                <button type="button" onClick={onClose} className="ms-auto flex items-center justify-center text-body hover:text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded text-sm h-8 w-8 focus:outline-none" data-dismiss-target="#toast-simple" aria-label="Close">
                     <span className="sr-only">Close</span>
                     <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
                 </button>
@@ -69,12 +77,14 @@ export function BuyNowButton({ id,className,style,quantity }: { id?: string; cla
 }
 
 export function RemoveFromCartButton({ id,className,style }: { id?: string; className?: string; style?: React.CSSProperties }) {
+    const {showNotification} = useNotification();
     return (
         <>
             <button id={id} className={`${className ? className : "PrimaryBtn flex items-center gap-2"}`} style={style}
                 onClick={async () => { const result = await removeFromCart({ id: id || "" });
-                if (result.status) {
-                }
+                if (result.status) 
+                    showNotification("RemoveFromCartButton");
+                
             }} >
                 <Icon name="Cart" />
                 Remove

@@ -1,29 +1,34 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { createCustomer } from "@/app/lib/actions-customer";
-import Notifications, { CreateButton } from '../common/ui-elements';
+import  { CreateButton } from '../common/ui-elements';
 import { useState } from 'react';
+import { useNotification } from '@/app/context/NotificationContext';
 
 export default function CustomerRegForm() {
     const router = useRouter();
+     const { showNotification } = useNotification();
+
     const [errors, setErrors] = useState<Record<string, string[]>>({},);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [notifications, setNotifications] = useState(false);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
-        setNotifications(true);
 
         const formData = new FormData(event.currentTarget);
-        
+
         try {
             const result = await createCustomer(formData);
             if (result.status && result.status === 200 && result.redirectUrl != '') {
-                router.push(result.redirectUrl!);
+                showNotification("AccountCreated");
+
+                setTimeout(() => {
+                    router.push(result.redirectUrl!);
+                }, 1800);
             } else if(result?.errors){
                 setErrors(result.errors);
-               // setIsSubmitting(false);
+               setIsSubmitting(false);
             }
         } catch (error) {
             console.log(error);
@@ -34,7 +39,7 @@ export default function CustomerRegForm() {
     return (
         <>
 
-            {notifications && <Notifications onClose={() => setNotifications(false)} />}
+           
             <div className="flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-6 py-8">
                 <div className="w-full max-w-4xl rounded-2xl border border-gray-200 bg-white shadow-xl p-10">
                     <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">

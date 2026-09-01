@@ -63,29 +63,37 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                                         <div className="card-body">
                                             <Link href={`/product/${item._id}`}>
                                                 <h5 className="card-title font-bold">
-                                                    {item.product_name.charAt(0).toUpperCase() + item.product_name.slice(1)}
+                                                    {item.product_name.charAt(0).toUpperCase() +
+                                                        item.product_name.slice(1)}
                                                 </h5>
                                             </Link>
                                             <p className="card-text">{trimCharacters(item.product_desc)}</p>
-                                                
-                                            <ProductActions from="cart" price={item.product_price}  currentQuantity={item.quantity}   className="form-select form-select-sm mt-2" style={{ width: "5rem" }} id={item._id} />
 
+                                            <ProductActions
+                                                from="cart"
+                                                price={item.product_price}
+                                                currentQuantity={item.quantity}
+                                                className="form-select form-select-sm mt-2"
+                                                style={{ width: "5rem" }}
+                                                id={item._id}
+                                            />
 
                                             <hr className="my-4" />
-                                            <p className="card-text">
-                                                <RemoveFromCartButton
-                                                    id={item._id}
-                                                    className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2"
-                                                    style={{ width: "13rem" }}
-                                                />
+                                           
+                                            <RemoveFromCartButton
+                                                id={item._id}
+                                                className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2"
+                                                style={{ width: "13rem" }}
+                                                
+                                            />
 
-                                                <BuyNowButton
-                                                    id={item._id}
-                                                    className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2"
-                                                    style={{ width: "13rem" }}
-                                                    quantity={item.quantity}
+                                            <BuyNowButton
+                                                id={item._id}
+                                                className="btn border me-2 d-inline-flex align-items-center justify-content-center gap-2"
+                                                style={{ width: "13rem" }}
+                                                quantity={item.quantity}
                                                 />
-                                            </p>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +102,6 @@ export async function CartDetails({ id }: { id: string | undefined }) {
                     </div>
 
                     <PriceSummary userId={userId} />
-                    
                 </div>
             </main>
         </CartWrapper>
