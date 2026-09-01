@@ -187,8 +187,7 @@ export async function removeFromCart({ id }: { id?: string }) {
        }
 
         console.log("Product removed from wishlist successfully");
-        //revalidatePath("/wishlist");
-
+        revalidatePath("/wishlist");
         return { status: true, message: "Product removed from wishlist" };      
     } catch (error) {
         console.error("Error removing product from wishlist:", error);
