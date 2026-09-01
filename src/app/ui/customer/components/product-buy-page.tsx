@@ -2,7 +2,7 @@
 
 import { Customer } from "@/app/lib/definitions";
 import Icon from "@/app/ui/common/svg-tiles";
-import { AddAdressButtonWrapper } from "@/app/ui/common/buttons";
+import { AddAdressButtonWrapper } from "@/app/ui/common/ui-elements";
 
 export  function ProductBuyPage({ customerData }: { customerData: Customer[] | null }) {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

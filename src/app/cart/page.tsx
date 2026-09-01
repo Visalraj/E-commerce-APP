@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Skeleton from "../ui/common/loading-skeleton";
 import { CartData } from "../lib/definitions";
 import Image from "next/image";
-import { BuyNowButton, RemoveFromCartButton } from "../ui/common/buttons";
+import { BuyNowButton, RemoveFromCartButton } from "../ui/common/ui-elements";
 import Link from "next/link";
 import ProductActions from "@/app/ui/customer/components/product-action";
 import CartWrapper from "./CartWrapper";
@@ -35,10 +35,7 @@ export async function CartDetails({ id }: { id: string | undefined }) {
         cache: "no-store",
     });
     const cartData = await response.json();
-    const result = cartData.data || [];
-
-    //const totalPrice = result.reduce((total: number, item: CartData) => total + item.product_price * item.quantity, 0);
-    
+    const result = cartData.data || [];    
     if (!response.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
 
     return (

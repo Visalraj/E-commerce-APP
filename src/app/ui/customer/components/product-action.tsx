@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { QuantityInput, AddToCartButton, BuyNowButton } from "@/app/ui/common/buttons";
+import { QuantityInput, AddToCartButton, BuyNowButton } from "@/app/ui/common/ui-elements";
 import { useCart } from "@/app/context/CartContext";
 
 
