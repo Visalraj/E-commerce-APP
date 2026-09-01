@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation';
 import UserWishlist from '@/models/user-wishlist';
 import { AuthState } from './definitions';
 import usersMultipleAddress from '@/models/user-multiple-address';
+import { revalidatePath } from "next/cache";
 
 export async function authenticate( prevState: AuthState | undefined, formData: FormData ): Promise<AuthState | undefined> {    
     const FormSchema = z.object({
@@ -163,7 +164,6 @@ export async function removeFromCart({ id }: { id?: string }) {
     if (!user) return redirect("/login");
     try {
        await connectDB();
-
        const wishlist = await UserWishlist.findOneAndUpdate(
            {
                userId: new mongoose.Types.ObjectId(user.id),
@@ -186,7 +186,9 @@ export async function removeFromCart({ id }: { id?: string }) {
            });
        }
 
-       console.log("Product removed from wishlist successfully");
+        console.log("Product removed from wishlist successfully");
+        //revalidatePath("/wishlist");
+
         return { status: true, message: "Product removed from wishlist" };      
     } catch (error) {
         console.error("Error removing product from wishlist:", error);

@@ -13,6 +13,11 @@
     --foreground: #ededed;
   }
 }*/
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 body {
   color: var(--foreground);
@@ -21,15 +26,29 @@ body {
 }
 
 .SecondaryBtn {
-  @apply flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600
-  hover:from-indigo-600 hover:to-purple-700 text-white font-semibold px-6 py-3
-  rounded-xl shadow-md hover:shadow-lg transition-all duration-300;
+  @apply flex items-center gap-2
+  bg-gradient-to-r from-indigo-500 to-purple-600
+  hover:from-indigo-600 hover:to-purple-700
+  text-white font-semibold px-6 py-3
+  rounded-xl shadow-md hover:shadow-lg
+  transition-all duration-300
+  disabled:opacity-60
+  disabled:cursor-not-allowed
+  disabled:shadow-none;
 }
 
 .PrimaryBtn {
-  @apply flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600
-  hover:from-emerald-600 hover:to-teal-700 text-white font-semibold px-6 py-3
-  rounded-xl shadow-md hover:shadow-lg transition-all duration-300;
+  @apply flex items-center gap-2 
+  bg-gradient-to-r from-emerald-500 to-teal-600
+  hover:from-emerald-600 hover:to-teal-700 
+  text-white font-semibold px-6 py-3
+  rounded-xl shadow-md hover:shadow-lg 
+  transition-all duration-300
+  disabled:from-emerald-400 disabled:to-teal-500
+  disabled:opacity-60
+  disabled:cursor-not-allowed
+  disabled:shadow-none;
+
 }
 
 
@@ -54,4 +73,20 @@ body {
   100% {
     transform: translateX(100%);
   }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out forwards;
 }

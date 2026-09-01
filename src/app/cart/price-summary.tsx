@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/app/context/CartContext";
-import { ProceedToCheckoutButton } from "@/app/ui/common/buttons";
+import { ProceedToCheckoutButton } from "@/app/ui/common/ui-elements";
 import { CartData } from "../lib/definitions";
 
 export default function PriceSummary({userId,from_page}: {userId: string | undefined; from_page?: string;}) {
