@@ -21,7 +21,7 @@ export default async function CartPage() {
         </div>
     );
 }
-export async function CartDetails({ id }: { id: string | undefined }) {
+async function CartDetails({ id }: { id: string | undefined }) {
     const userId = id;
     const response = await fetch(`${process.env.API_URL}top-deals/`, {
         method: "POST",
