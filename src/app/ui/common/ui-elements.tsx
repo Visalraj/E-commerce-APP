@@ -58,7 +58,8 @@ export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; is
     };
 
     return (
-        <button className="SecondaryBtn flex items-center gap-2 disabled:opacity-50" onClick={handleWishlistClick} >
+        <button className="SecondaryBtn flex items-center gap-2 w-full sm:flex-1
+            min-h-[56px] disabled:opacity-50" onClick={handleWishlistClick} >
             {!wishlisted ? (<><Icon name="Wishlist" />{" "} </> ) : ( <>  <Icon name="Filledheart" />{" "} </>)}
             {!wishlisted ? "Wishlist" : "Wishlisted"}
         </button>
@@ -67,8 +68,8 @@ export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; is
 
 export function BuyNowButton({ id,className,style,quantity }: { id?: string; className?: string; style?: React.CSSProperties; quantity: number }) {
     return (
-        <Link href={`/product/buy/${(id+'____'+quantity)}`} >
-            <button className={`${className ? className : "PrimaryBtn flex items-center gap-2"} `} style={style}>
+        <Link href={`/product/buy/${id + "____" + quantity}`} className="w-full sm:flex-1">
+            <button className={`${className ? className : "PrimaryBtn flex items-center gap-2 w-full min-h-[56px]"} `} style={style}>
                 <Icon name="Shoppingbag" />
                 Buy Now
             </button>
