@@ -55,7 +55,8 @@ export async function createCustomer(formData: FormData) {
         customer_city: z.string().min(3, "City is required"),
         customer_county: z.string().min(3, "County is required"),
         customer_country: z.string().min(3, "Country is required"),
-        customer_postcode: z.string().min(6, "Postcode is required")
+        customer_postcode: z.string().min(6, "Postcode is required"),
+        customer_phone: z.string().min(10, "Phone is required")
     });
     
     const CreateCustomer = FormSchema.omit({ id: true });
@@ -71,6 +72,7 @@ export async function createCustomer(formData: FormData) {
         customer_county: formData.get("customer_county"),
         customer_country: formData.get("customer_country"),
         customer_postcode: formData.get("customer_postcode"),
+        customer_phone: formData.get("customer_phone"),
     });
 
     if (!validation.success) {
@@ -78,7 +80,7 @@ export async function createCustomer(formData: FormData) {
     }
 
     const { customer_fname, customer_lname,customer_age,  customer_email,customer_addr_one, customer_addr_two, customer_city, customer_county,
-        customer_country, customer_postcode,
+        customer_country, customer_postcode, customer_phone
     } = validation.data;
 
 
@@ -88,7 +90,8 @@ export async function createCustomer(formData: FormData) {
 
     try {
         if (await connectDB()) {
-            await Users.create({
+            
+            const user = await Users.create({
                 firstname: customer_fname,
                 lastname: customer_lname,
                 age: customer_age,
@@ -100,8 +103,23 @@ export async function createCustomer(formData: FormData) {
                 county: customer_county,
                 country: customer_country,
                 postcode: customer_postcode,
+                phone: customer_phone,
                 isActive: false,
                 username: username,
+            });
+
+            await usersMultipleAddress.create({
+                 userId: user._id,
+                 firstname: customer_fname,
+                 lastname: customer_lname,
+                 email: customer_email,
+                 phone: customer_phone,
+                 customer_addr_one: customer_addr_one,
+                 customer_addr_two: customer_addr_two,
+                 customer_city: customer_city,
+                 customer_county: customer_county,
+                 customer_country: customer_country,
+                 customer_postcode: customer_postcode,
             });
             console.log("User created successfully");
             return { status: 200,  redirectUrl:   process.env.NEXT_PUBLIC_BASE_URL +    "/login",};

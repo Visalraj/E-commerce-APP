@@ -129,6 +129,14 @@ export default function CustomerRegForm() {
                             {errors["customer_postcode"] && (<p className="mt-1 text-sm text-red-400"> {errors["customer_postcode"][0]} </p> )}
                         </div>
 
+                         <div>
+                            <label className="text-sm font-medium text-gray-700" htmlFor='Phone'>
+                                Phone
+                            </label>
+                            <input type="text" name="customer_phone" className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" id='Phone'/>
+                            {errors["customer_phone"] && (<p className="mt-1 text-sm text-red-400"> {errors["customer_phone"][0]} </p> )}
+                        </div>
+
                             
                         <div className="md:col-span-2 flex justify-end">
                             <CreateButton isSubmitting={isSubmitting} />

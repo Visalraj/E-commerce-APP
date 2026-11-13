@@ -58,9 +58,20 @@ export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; is
     };
 
     return (
-        <button className="SecondaryBtn flex items-center gap-2 w-full sm:flex-1
-            min-h-[56px] disabled:opacity-50" onClick={handleWishlistClick} >
-            {!wishlisted ? (<><Icon name="Wishlist" />{" "} </> ) : ( <>  <Icon name="Filledheart" />{" "} </>)}
+        <button
+            className="SecondaryBtn flex items-center  sm:flex-1 flex-1  justify-center sm:justify-center gap-3 w-full min-h-[64px] px-6 py-4
+                rounded-2xl text-white text-lg font-bold shadow-lg shadow-purple-500/20 border border-white/10
+                disabled:opacity-50" onClick={handleWishlistClick} >
+            {!wishlisted ? (
+                <>
+                    <Icon name="Wishlist" />{" "}
+                </>
+            ) : (
+                <>
+                    {" "}
+                    <Icon name="Filledheart" />{" "}
+                </>
+            )}
             {!wishlisted ? "Wishlist" : "Wishlisted"}
         </button>
     );
@@ -68,8 +79,19 @@ export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; is
 
 export function BuyNowButton({ id,className,style,quantity }: { id?: string; className?: string; style?: React.CSSProperties; quantity: number }) {
     return (
-        <Link href={`/product/buy/${id + "____" + quantity}`} className="w-full sm:flex-1">
-            <button className={`${className ? className : "PrimaryBtn flex items-center gap-2 w-full min-h-[56px]"} `} style={style}>
+        <Link href={`/product/buy/${id + "____" + quantity}`} className="flex flex-1 w-full">
+            <button
+                className={`
+                    ${className || ""}
+                    PrimaryBtn flex items-center justify-center gap-3
+                    w-full min-h-[64px] px-6 py-4
+                    rounded-2xl 
+                    text-white text-lg font-bold
+                    shadow-lg shadow-teal-500/20
+                    border border-white/10
+                `}
+                style={style}
+            >
                 <Icon name="Shoppingbag" />
                 Buy Now
             </button>
