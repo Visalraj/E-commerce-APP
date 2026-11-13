@@ -46,6 +46,10 @@ export type CartData = {
     quantity: number;
 };
 
+export type CustomerBuyPageData = Customer & {
+    userId: string;
+};
+
 export type AuthState = {
     errors?: {  customer_email?: string[];
             customer_password?: string[];

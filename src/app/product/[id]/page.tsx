@@ -11,6 +11,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     const { id } = await params;
     const user = await isLoggedIn();
 
+
+
     const productUserId = id+'____'+user?.id;
     return (
         <div className="min-h-screen bg-[#FDFDFD]">

@@ -62,10 +62,15 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
                     Quantity
                 </label>
 
-                <QuantityInput price={price}   onQuantityChange={handleQuantityChange} currentQuantity={quantity} from={from}  />
+                <QuantityInput
+                    price={price}
+                    onQuantityChange={handleQuantityChange}
+                    currentQuantity={quantity}
+                    from={from}
+                />
             </div>
 
-            <div className="wrap-btns pt-4 mt-3 flex gap-4">
+            <div className="wrap-btns pt-4 mt-3 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <AddToCartButton id={id} isWishlisted={isWishlisted} quantity={quantity} />
                 <BuyNowButton id={id} quantity={quantity} />
             </div>

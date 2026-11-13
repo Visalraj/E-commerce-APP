@@ -1,14 +1,26 @@
 "use client";
 
-import { Customer } from "@/app/lib/definitions";
+import {  CustomerBuyPageData } from "@/app/lib/definitions";
 import Icon from "@/app/ui/common/svg-tiles";
 import { AddAdressButtonWrapper } from "@/app/ui/common/ui-elements";
+import { useState } from "react";
+import {loadStripe} from "@stripe/stripe-js";
 
-export  function ProductBuyPage({ customerData }: { customerData: Customer[] | null }) {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+export  function ProductBuyPage({ customerData }: { customerData: CustomerBuyPageData[] | null }) {
+    const result = customerData?.flat() ?? [];
+    const [paymentText, setPaymentText] = useState("");
+    const [selectedAddressId, setSelectedAddressId] = useState(result.length > 0 ? result[0]._id : "");
+
+    const handleSubmit = async()=> {
+        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
+        console.log(stripe);
     };
 
+    const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedPaymentMethod = event.target.value;
+        setPaymentText("Pay Now");
+        console.log("Selected Payment Method:", selectedPaymentMethod);
+    }
     return (
         <>
             {/* OUTER LAYOUT CONTAINER (NOT FORM) */}
@@ -21,12 +33,13 @@ export  function ProductBuyPage({ customerData }: { customerData: Customer[] | n
                     </div>
 
                     {/* FORM STARTS HERE */}
-                    <form onSubmit={handleSubmit} id="checkoutForm">
+                    <form id="checkoutForm">
                         <div className="flex flex-row flex-wrap gap-4 w-full mt-4">
-                            {customerData?.map((item, index) => (
+                            {result?.map((item, index) => (
                                 <div
                                     key={index}
                                     className="flex-1 min-w-[250px] max-w-[300px] border border-gray-200 bg-white p-6 rounded-xl shadow-sm hover:border-blue-400 transition-all"
+                                    id={item._id}
                                 >
                                     <label className="relative flex flex-col cursor-pointer">
                                         <input
@@ -34,6 +47,7 @@ export  function ProductBuyPage({ customerData }: { customerData: Customer[] | n
                                             name="delivery-address"
                                             value={item._id}
                                             className="peer sr-only"
+                                            onChange={() => setSelectedAddressId(item._id)}
                                             defaultChecked={index === 0}
                                         />
 
@@ -71,6 +85,7 @@ export  function ProductBuyPage({ customerData }: { customerData: Customer[] | n
                                 </div>
                             ))}
                         </div>
+                        <input type="hidden" name="customer_address_id" value={selectedAddressId} />
                     </form>
                 </div>
 
@@ -79,15 +94,15 @@ export  function ProductBuyPage({ customerData }: { customerData: Customer[] | n
                     <h3 className="text-xl mb-4">Payment Method</h3>
 
                     <label className="flex items-center gap-3">
-                        <input type="radio" name="payment" value="card" />
+                        <input type="radio" name="payment" value="card" onChange={handlePaymentChange} />
                         Card
                     </label>
                 </div>
 
                 {/* SUBMIT (OUTSIDE FORM) */}
                 <div className="border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    <button type="submit" form="checkoutForm" className="PrimaryBtn px-4 py-2">
-                        Submit Order
+                    <button   type="button" onClick={() => handleSubmit()} form="checkoutForm" className="PrimaryBtn px-4 py-2">
+                        {paymentText || "Select Payment Method"}
                     </button>
                 </div>
             </div>

@@ -5,7 +5,7 @@ export default async function Page() {
     return (
         <>
             <Navbar />
-            <div className="w-1/3 rounded-md m-auto relative ">
+            <div className="rounded-md m-auto relative ">
                 <Loginform />
             </div>
         </>

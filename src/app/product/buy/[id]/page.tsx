@@ -2,8 +2,7 @@
 import { Suspense } from "react";
 import Navbar from "@/app/ui/Home/navbar";
 import Skeleton from "@/app/ui/common/loading-skeleton";
-import { getCustomerById, isLoggedIn } from "@/app/Helpers/function";
-import { Customer } from "@/app/lib/definitions";
+import { isLoggedIn } from "@/app/Helpers/function";
 import {ProductBuyPage} from "@/app/ui/customer/components/product-buy-page";
 import Image from "next/image";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -12,22 +11,18 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
    // await redirectToLoginIfNotAuthenticated();
     const user = await isLoggedIn();
     const productUserId = id.split("____")[0] + "____" + user?.id;
-   
-
-    const response = user?.id ? await getCustomerById({ id: user.id }) : null;
-    const getCustomerData = response?.data[0] || null;
-    return (
+       return (
         <div className="min-h-screen bg-[#FDFDFD]">
             <Navbar />
             <Suspense fallback={<Skeleton />}>
-                <ProductDetails id={productUserId} getCustomerData={getCustomerData} userId={user?.id} quantity={quantity} />
+                <ProductDetails id={productUserId}  userId={user?.id} quantity={quantity} />
             </Suspense>
         </div>
     );
 }
 
 
-async function ProductDetails({id,getCustomerData, userId, quantity}: { id: string; getCustomerData: Customer | null; userId: string | undefined; quantity: string }) {
+async function ProductDetails({id, userId, quantity}: { id: string; userId: string | undefined; quantity: string }) {
     const res = await fetch(`${process.env.API_URL}top-deals/${id}`, {
         cache: "no-store",
     });
@@ -45,7 +40,7 @@ async function ProductDetails({id,getCustomerData, userId, quantity}: { id: stri
     });
     const addressData = await response.json();
 
-    const result = [getCustomerData, ...(addressData.data || [])];
+    const result = [(addressData.data || [])];
     if (!res.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
     const { data } = await res.json();
     if (!data) return <div className="p-20 text-center">No data found</div>;

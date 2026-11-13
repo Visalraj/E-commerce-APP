@@ -11,6 +11,7 @@ const usersSchema = new Schema(
         county: { type: String },
         country: { type: String },
         postcode: { type: String },
+        phone: { type: String },
         username: { type: String },
         password: { type: String },
         isActive: { type: Boolean, default: true }
