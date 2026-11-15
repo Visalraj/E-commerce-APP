@@ -18,9 +18,12 @@ export async function POST(req) {
     if (event.type === "checkout.session.completed") {
         const session = event.data.object;
 
-        // const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent, {
-        //     expand: ["payment_method"],
-        // });
+        const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent, {
+            expand: ["payment_method"],
+        });
+
+        const paymentMethod = paymentIntent.payment_method;
+
 
         try{
             if(await connectDB() && session.client_reference_id && session.payment_status === "paid"){
@@ -30,8 +33,8 @@ export async function POST(req) {
                     console.log("Order found for session:", session.id);
                     order.paymentStatus = "paid";
                     order.orderStatus = "processing";
-                    order.paymentMethod = paymentMethod;
-
+                    order.paymentMethod = paymentMethod.type;
+                    order.jsonData = session; // Store the entire payment method object
                     await order.save();
                 }else{
                     console.log("Order not found for session:", session.id);

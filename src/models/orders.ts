@@ -51,8 +51,9 @@ const orderSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["card", "paypal", "bank_transfer"],
-            default: "card",
+        },
+        jsonData: {
+            type: mongoose.Schema.Types.Mixed,
         },
 
         stripePaymentIntentId: String,
