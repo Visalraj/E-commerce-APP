@@ -43,6 +43,8 @@ async function ProductDetails({id, userId, quantity}: { id: string; userId: stri
     const result = [(addressData.data || [])];
     if (!res.ok || result.length === 0) return <div className="p-20 text-center">Product not found</div>;
     const { data } = await res.json();
+    data.quantity = quantity;;
+    
     if (!data) return <div className="p-20 text-center">No data found</div>;
 
     return (
@@ -51,7 +53,7 @@ async function ProductDetails({id, userId, quantity}: { id: string; userId: stri
                 {/* Left Column */}
                 <div className="w-4/5 flex flex-col gap-4">
                     {/* Delivery Address */}
-                    {result.length > 0 && <ProductBuyPage customerData={result} />}
+                    {result.length > 0 && <ProductBuyPage customerData={result} cart={data} />}
                 </div>
 
                 {/* Right Column */}

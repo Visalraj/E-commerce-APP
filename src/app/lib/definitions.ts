@@ -50,6 +50,10 @@ export type CustomerBuyPageData = Customer & {
     userId: string;
 };
 
+export type Cart = Products_schema & {
+    isInWishlist: boolean;
+};
+
 export type AuthState = {
     errors?: {  customer_email?: string[];
             customer_password?: string[];
