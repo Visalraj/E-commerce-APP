@@ -49,6 +49,11 @@ const orderSchema = new mongoose.Schema(
             unique: true,
             sparse: true,
         },
+        paymentMethod: {
+            type: String,
+            enum: ["card", "paypal", "bank_transfer"],
+            default: "card",
+        },
 
         stripePaymentIntentId: String,
     },
