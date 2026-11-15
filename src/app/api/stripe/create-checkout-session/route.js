@@ -66,7 +66,7 @@ export async function POST(req) {
                 orderId: order._id.toString(),
                 userId: usersession.user.id.toString(),
             },
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks/${order._id}?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
         });
         
