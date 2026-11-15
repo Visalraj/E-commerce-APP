@@ -1,26 +1,47 @@
 "use client";
 
-import {  CustomerBuyPageData } from "@/app/lib/definitions";
+import {  CustomerBuyPageData, Products_schema } from "@/app/lib/definitions";
 import Icon from "@/app/ui/common/svg-tiles";
 import { AddAdressButtonWrapper } from "@/app/ui/common/ui-elements";
 import { useState } from "react";
-import {loadStripe} from "@stripe/stripe-js";
-
-export  function ProductBuyPage({ customerData }: { customerData: CustomerBuyPageData[] | null }) {
+    
+export  function ProductBuyPage({ customerData, cart }: { customerData: CustomerBuyPageData[] | null; cart: Products_schema }) {
     const result = customerData?.flat() ?? [];
+    const cartData = cart ? [cart] : [];
     const [paymentText, setPaymentText] = useState("");
     const [selectedAddressId, setSelectedAddressId] = useState(result.length > 0 ? result[0]._id : "");
 
-    const handleSubmit = async()=> {
-        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
-        console.log(stripe);
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch("/api/stripe/create-checkout-session", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    products: cartData,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Checkout failed");
+            }
+
+            if (data.url) {
+                window.location.href = data.url;
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
+        }
     };
 
     const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedPaymentMethod = event.target.value;
-        setPaymentText("Pay Now");
+           setPaymentText("Pay Now");
         console.log("Selected Payment Method:", selectedPaymentMethod);
-    }
+    };
     return (
         <>
             {/* OUTER LAYOUT CONTAINER (NOT FORM) */}
@@ -101,9 +122,9 @@ export  function ProductBuyPage({ customerData }: { customerData: CustomerBuyPag
 
                 {/* SUBMIT (OUTSIDE FORM) */}
                 <div className="border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    <button   type="button" onClick={() => handleSubmit()} form="checkoutForm" className="PrimaryBtn px-4 py-2">
+                     <button   type="button" onClick={() => handleSubmit()} form="checkoutForm" className="PrimaryBtn px-4 py-2">
                         {paymentText || "Select Payment Method"}
-                    </button>
+                    </button> 
                 </div>
             </div>
         </>
