@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema(
             {
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: "Product",
+                    ref: "products",
                     required: true,
                 },
                 name: String,
@@ -32,11 +32,6 @@ const orderSchema = new mongoose.Schema(
             default: "gbp",
         },
 
-        paymentStatus: {
-            type: String,
-            enum: ["pending", "paid", "failed", "expired"],
-            default: "pending",
-        },
 
         orderStatus: {
             type: String,
@@ -44,23 +39,10 @@ const orderSchema = new mongoose.Schema(
             default: "pending",
         },
 
-        stripeSessionId: {
-            type: String,
-            unique: true,
-            sparse: true,
         },
-        paymentMethod: {
-            type: String,
-        },
-        jsonData: {
-            type: mongoose.Schema.Types.Mixed,
-        },
-
-        stripePaymentIntentId: String,
-    },
     {
         timestamps: true,
     },
 );
 
-export default mongoose.models.Order || mongoose.model("Order", orderSchema);
+export default mongoose.models.Orders || mongoose.model("Orders", orderSchema);

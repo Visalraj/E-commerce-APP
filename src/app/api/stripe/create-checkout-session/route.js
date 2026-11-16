@@ -18,12 +18,12 @@ export async function POST(req) {
             return NextResponse.json({ message: "Cart is empty" }, { status: 400 });
         }
 
-   
+
 
         // Convert cart products into Stripe line items
         const lineItems = products.map((product) => {
             const name = product.product_name;
-            const image = product.image;
+            const image = `${process.env.NEXT_PUBLIC_CLOUDINARY_URL}${product.images}`;
             const price = product.product_price;
             const quantity = product.quantity;
 
@@ -48,6 +48,8 @@ export async function POST(req) {
             };
         });
 
+    
+
         const order = await Order.create({
             user: usersession.user.id,
             items: orderItems,
@@ -56,6 +58,7 @@ export async function POST(req) {
             paymentStatus: "pending",
             orderStatus: "pending",
         });
+
 
 
         const session = await stripe.checkout.sessions.create({
