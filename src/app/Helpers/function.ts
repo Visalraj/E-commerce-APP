@@ -6,6 +6,9 @@ import connectDB from '@/library/db';
 import Users from '@/models/users';
 import mongoose from 'mongoose';
 import { Customer } from '../lib/definitions';
+import { headers } from 'next/headers';
+import { UAParser } from 'ua-parser-js';
+
 
 export async function generateRandomString({ length }: { length: number }) {
     let result = '';
@@ -168,3 +171,23 @@ export const generatePagination = async (currentPage: number, totalPages: number
         }
     });
 };
+
+
+export async function getUserAgent(){
+     const headersList = await headers();
+     const ua = headersList.get("user-agent") || "";
+
+     const parser = new UAParser(ua);
+     const result = parser.getResult();
+
+     const userAgentInfo = {
+         userAgent: ua,
+         browser: result.browser.name || "Unknown",
+         browserVersion: result.browser.version || "Unknown",
+         os: result.os.name || "Unknown",
+         osVersion: result.os.version || "Unknown",
+         device: result.device.type || "Desktop",
+     };
+
+     return userAgentInfo.browser + " " + userAgentInfo.browserVersion + " on " + userAgentInfo.os + " " + userAgentInfo.osVersion + " (" + userAgentInfo.device + ")";
+}

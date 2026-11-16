@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import Order from "@/models/orders";
 import { auth } from "@/app/auth";
+import { getUserAgent } from "@/app/Helpers/function";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 export async function POST(req) {
@@ -68,6 +69,7 @@ export async function POST(req) {
             metadata: {
                 orderId: order._id.toString(),
                 userId: usersession.user.id.toString(),
+                userAgent:await getUserAgent() || "Unknown",
             },
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks/${order._id}?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
