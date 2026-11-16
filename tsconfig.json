@@ -35,7 +35,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-, "src/app/lib/stripe.js"  ],
+, "src/app/lib/stripe.js", "src/app/ui/customer/components/popper.jsx"  ],
   "exclude": [
     "node_modules"
   ]
