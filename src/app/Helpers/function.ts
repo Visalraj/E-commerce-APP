@@ -70,8 +70,8 @@ export async function redirectToLoginIfNotAuthenticated() {
     }
 }
 
-export async function trimCharacters(inputString: string): Promise<string> {
-const maxLength = 200;
+export async function trimCharacters(inputString: string,length:number=200): Promise<string> {
+const maxLength = length;
 let trimmedString = inputString.substr(0, maxLength);
 
 //re-trim if we are in the middle of a word

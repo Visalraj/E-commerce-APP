@@ -8,7 +8,6 @@ import { useState } from "react";
 export  function ProductBuyPage({ customerData, cart }: { customerData: CustomerBuyPageData[] | null; cart: Products_schema }) {
     const result = customerData?.flat() ?? [];
     const cartData = cart ? [cart] : [];
-    const [paymentText, setPaymentText] = useState("");
     const [selectedAddressId, setSelectedAddressId] = useState(result.length > 0 ? result[0]._id : "");
 
     const handleSubmit = async () => {
@@ -37,11 +36,6 @@ export  function ProductBuyPage({ customerData, cart }: { customerData: Customer
         }
     };
 
-    const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedPaymentMethod = event.target.value;
-           setPaymentText("Pay Now");
-        console.log("Selected Payment Method:", selectedPaymentMethod);
-    };
     return (
         <>
             {/* OUTER LAYOUT CONTAINER (NOT FORM) */}
@@ -111,21 +105,12 @@ export  function ProductBuyPage({ customerData, cart }: { customerData: Customer
                 </div>
 
                 {/* PAYMENT (OUTSIDE FORM) */}
-                <div className="border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                    <h3 className="text-xl mb-4">Payment Method</h3>
-
-                    <label className="flex items-center gap-3">
-                        <input type="radio" name="payment" value="card" onChange={handlePaymentChange} />
-                        Card
-                    </label>
-                </div>
-
-                {/* SUBMIT (OUTSIDE FORM) */}
-                <div className="border border-gray-200 rounded-[2.5rem] bg-white shadow-sm p-6">
-                     <button   type="button" onClick={() => handleSubmit()} form="checkoutForm" className="PrimaryBtn px-4 py-2">
-                        {paymentText || "Select Payment Method"}
+                <div className="rounded-[2.5rem] bg-white shadow-sm p-6 flex justify-end mt-14">
+                    <button   type="button" onClick={() => handleSubmit()} form="checkoutForm" className="PrimaryBtn px-4 py-2 ">
+                       {<> Pay Now <Icon name="Arrowright" /></> }
                     </button> 
                 </div>
+
             </div>
         </>
     );
