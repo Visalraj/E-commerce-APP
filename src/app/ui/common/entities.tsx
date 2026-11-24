@@ -4,6 +4,7 @@ import { ActionButtons } from "../admin/components/buttons";
 import Icon from "./svg-tiles";
 import { Customer, Products_schema } from "@/app/lib/definitions";
 import DeleteCustomer from "../admin/components/delete-customer";
+import { trimCharacters } from "@/app/Helpers/function";
 
 type EntityMap = {
     customers: Customer;
@@ -57,7 +58,7 @@ export default async function Entities<T extends keyof EntityMap>({
                                             {type === 'products' && (
                                                 <>
                                                     <td className="whitespace-nowrap px-3 py-3">{(item as Products_schema).product_name}</td>
-                                                    <td className="whitespace-nowrap px-3 py-3">{(item as Products_schema).product_desc}</td>
+                                                    <td className="whitespace-nowrap px-3 py-3">{trimCharacters((item as Products_schema).product_desc,20)}</td>
                                                     <td className="whitespace-nowrap px-3 py-3">{(item as Products_schema).product_price}</td>
                                                     <td className="whitespace-nowrap px-3 py-3">
                                                         {(item as Products_schema).isActive ? <Icon name="activestatus" /> : <Icon name="inactivestatus" />}

@@ -61,7 +61,6 @@ export async function POST(req) {
         });
 
 
-
         const session = await stripe.checkout.sessions.create({
             line_items: lineItems,
             mode: "payment",
@@ -71,7 +70,7 @@ export async function POST(req) {
                 userId: usersession.user.id.toString(),
                 userAgent:await getUserAgent() || "Unknown",
             },
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks/${order._id}?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thanks/${order._id}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
         });
         
