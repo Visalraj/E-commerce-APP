@@ -7,8 +7,8 @@ import Image from "next/image";
 import Icon from "../../common/svg-tiles";
 
 const links = [
-    { name: 'Home', href: '/dashboard' },
-    { name: 'Wishlist', href: '/wishlist' },
+    { name: 'Home', href: '/profile/dashboard' },
+    { name: 'Wishlist', href: '/profile/wishlists' },
     { name: 'SignOut', href: '' },
 ];
 
@@ -45,21 +45,27 @@ export default function CustomerSideBar() {
                         {
                             links.map((link) => {
                                 let isActive = false;
-                                if (link.href === '/dashboard') {
-                                    isActive = pathname === '/dashboard';
+                                if (link.href === '/profile/dashboard') {
+                                    isActive = pathname === '/profile/dashboard';
+                                }else if (link.href === "/profile/wishlists") {
+                                    isActive = pathname === "/profile/wishlists";
                                 }
-                                return (
-                                    <li key={link.name}>
-                                        <Link href={link.href} className={clsx("flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group",
-                                            {
-                                                "bg-gray-100": isActive
-                                            }
-                                        )}>
-                                            <Icon name={link.name} />
-                                            <span className="ms-3 pt-1">{link.name}</span>
-                                        </Link>
-                                    </li>
-                                )
+                                    return (
+                                        <li key={link.name}>
+                                            <Link
+                                                href={link.href}
+                                                className={clsx(
+                                                    "flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group",
+                                                    {
+                                                        "bg-gray-100": isActive,
+                                                    },
+                                                )}
+                                            >
+                                                <Icon name={link.name} />
+                                                <span className="ms-3 pt-1">{link.name}</span>
+                                            </Link>
+                                        </li>
+                                    );
                             })
                         }
 

@@ -6,15 +6,15 @@ export async function middleware(request: NextRequest) {
     const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
 
     const isLoginPage = request.nextUrl.pathname === '/login';
-    const isDashboardPage = request.nextUrl.pathname === '/dashboard';
+    const isDashboardPage = request.nextUrl.pathname === '/profile/dashboard';
 
     if ((token && isLoginPage) || (!token && isDashboardPage)) {
-        const redirectUrl = token ? '/dashboard' : '/login';
+        const redirectUrl = token ? '/profile/dashboard' : '/login';
         return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/login', '/dashboard']
+    matcher: ['/login', '/profile/dashboard']
 }

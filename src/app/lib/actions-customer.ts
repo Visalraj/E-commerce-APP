@@ -28,7 +28,7 @@ export async function authenticate( prevState: AuthState | undefined, formData: 
        return {errors: validation.error.flatten().fieldErrors, };
    
     try {
-        formData.append('redirectTo', '/dashboard');
+        formData.append('redirectTo', '/profile/dashboard');
         await signIn('credentials', formData);
     } catch (error) {
         if (error instanceof AuthError) {
