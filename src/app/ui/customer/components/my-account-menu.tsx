@@ -35,7 +35,7 @@ export default function MyAccount() {
 
             <Dropdown.Menu>
                 <Dropdown.Item as="button">
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href="/profile/dashboard">Dashboard</Link>
                 </Dropdown.Item>
                 <Dropdown.Item as="button">
                     <Link href="/cart">Cart</Link>
