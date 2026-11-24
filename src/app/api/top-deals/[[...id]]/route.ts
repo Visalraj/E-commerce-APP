@@ -323,9 +323,13 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const {type,userId} = body;
-    if((type != '' || type != undefined) && type == 'user_address'  && (userId!='' || userId !=undefined)){
+    const body = await request.json();
+    const {type} = body;
+    let userId = null;
+    const loggedInUser = await isLoggedIn();
+    userId = loggedInUser?.id;
+   
+    if((type != '' || type != undefined) && type == 'user_address' && userId!=undefined){
         try{
             await connectDB();
             const userObjectId = new mongoose.Types.ObjectId(userId);

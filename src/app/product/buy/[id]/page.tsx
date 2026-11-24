@@ -2,41 +2,41 @@
 import { Suspense } from "react";
 import Navbar from "@/app/ui/Home/navbar";
 import Skeleton from "@/app/ui/common/loading-skeleton";
-import {  isLoggedIn } from "@/app/Helpers/function";
 import {ProductBuyPage} from "@/app/ui/customer/components/product-buy-page";
 import Image from "next/image";
+import { headers } from "next/headers";
 
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const quantity = id.split("____")[1];
    // await redirectToLoginIfNotAuthenticated();
-    const user = await isLoggedIn();
-    const productUserId = id.split("____")[0] + "____" + user?.id;
+    const productUserId = id.split("____")[0];
        return (
         <div className="min-h-screen bg-[#FDFDFD]">
             <Navbar />
             <Suspense fallback={<Skeleton />}>
-                <ProductDetails id={productUserId}  userId={user?.id} quantity={quantity} />
+                <ProductDetails id={productUserId}  quantity={quantity} />
             </Suspense>
         </div>
     );
 }
 
 
-async function ProductDetails({id, userId, quantity}: { id: string; userId: string | undefined; quantity: string }) {
+async function ProductDetails({id, quantity}: { id: string;  quantity: string }) {
     const res = await fetch(`${process.env.API_URL}top-deals/${id}`, {
         cache: "no-store",
     });
 
+    const requestHeaders = await headers();
     const response = await fetch(`${process.env.API_URL}top-deals/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            Cookie: requestHeaders.get("cookie") ?? "",
         },
         body: JSON.stringify({
             type: "user_address",
-            userId: userId,
         }),
         cache: "no-store",
     });
