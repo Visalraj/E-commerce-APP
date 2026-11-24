@@ -3,24 +3,27 @@ import connectDB from "@/library/db";
 import Products from "@/models/products";
 import mongoose from "mongoose";
 import Users from "@/models/users";
+import { isLoggedIn } from "@/app/Helpers/function";
 export async function GET(  request: Request, context: { params: Promise<{ id?: string[] }> },) {
-
     try {
         await connectDB();
         const { id } = await context.params;
-        const productId = id?.[0].split("____")[0];
+        let productId = null;
+        if (id?.length) {
+             productId = id[0];
+        }
         let user_id = null;
-        if (id?.[0].split("____")[1]!== "undefined") 
-            user_id = id?.[0].split("____")[1].toString();
-        
+
+        if (user_id == undefined) {
+            const loggedInUser = await isLoggedIn();
+            user_id = loggedInUser?.id;
+        }
+
         if (productId) {
             if (!mongoose.Types.ObjectId.isValid(productId)) {
-                return NextResponse.json(
-                    { status: 400, error: "Invalid ID format" },
-                    { status: 400 },
-                );
-            }     
-            
+                return NextResponse.json({ status: 400, error: "Invalid ID format" }, { status: 400 });
+            }
+
             const product = await Products.aggregate([
                 // 1. Find the product
                 {
@@ -170,13 +173,8 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
                 },
             ]);
 
-
-
             if (!product.length) {
-                return NextResponse.json(
-                    { status: 404, error: "Product not found" },
-                    { status: 404 },
-                );
+                return NextResponse.json({ status: 404, error: "Product not found" }, { status: 404 });
             }
 
             return NextResponse.json({
@@ -194,6 +192,119 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
                     as: "productImages",
                 },
             },
+
+            {
+                $lookup: {
+                    from: "user_wishlists",
+
+                    let: {
+                        productId: "$_id",
+                        userId: user_id ? new mongoose.Types.ObjectId(user_id) : null,
+                    },
+
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        // Match the user
+                                        {
+                                            $eq: ["$userId", "$$userId"],
+                                        },
+
+                                        // Check if productId exists
+                                        // inside products[].productId
+                                        {
+                                            $gt: [
+                                                {
+                                                    $size: {
+                                                        $filter: {
+                                                            input: {
+                                                                $ifNull: ["$products", []],
+                                                            },
+
+                                                            as: "item",
+
+                                                            cond: {
+                                                                $eq: ["$$item.productId", "$$productId"],
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                                0,
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    ],
+
+                    as: "wishlistInfo",
+                },
+            },
+
+            // 6. Convert wishlistInfo into true/false
+            {
+                $addFields: {
+                    isInWishlist: {
+                        $gt: [
+                            {
+                                $size: {
+                                    $ifNull: ["$wishlistInfo", []],
+                                },
+                            },
+                            0,
+                        ],
+                    },
+
+                    quantity: {
+                        $let: {
+                            vars: {
+                                wishlistProducts: {
+                                    $ifNull: [
+                                        {
+                                            $arrayElemAt: ["$wishlistInfo.products", 0],
+                                        },
+                                        [],
+                                    ],
+                                },
+                            },
+
+                            in: {
+                                $let: {
+                                    vars: {
+                                        wishlistProduct: {
+                                            $arrayElemAt: [
+                                                {
+                                                    $filter: {
+                                                        input: "$$wishlistProducts",
+                                                        as: "item",
+                                                        cond: {
+                                                            $eq: ["$$item.productId", "$_id"],
+                                                        },
+                                                    },
+                                                },
+                                                0,
+                                            ],
+                                        },
+                                    },
+
+                                    in: "$$wishlistProduct.quantity",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+
+            // 7. Remove wishlistInfo from response
+            {
+                $project: {
+                    wishlistInfo: 0,
+                },
+            },
+
             {
                 $addFields: {
                     images: {
@@ -207,10 +318,7 @@ export async function GET(  request: Request, context: { params: Promise<{ id?: 
         return NextResponse.json({ status: 200, data: allProducts });
     } catch (error) {
         console.error("Database Error:", error);
-        return NextResponse.json(
-            { status: 500, error: "Internal Server Error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ status: 500, error: "Internal Server Error" }, { status: 500 });
     }
 }
 

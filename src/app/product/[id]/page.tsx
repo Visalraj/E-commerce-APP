@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import Image from "next/image";
 import Skeleton from "@/app/ui/common/loading-skeleton";
@@ -7,26 +8,32 @@ import ProductActions from "@/app/ui/customer/components/product-action";
 import CartWrapper from "@/app/cart/CartWrapper";
 import PriceSummary from "@/app/cart/price-summary";
 
+
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const user = await isLoggedIn();
+   // const user = await isLoggedIn();
 
 
 
-    const productUserId = id+'____'+user?.id;
+    //const productUserId = id+'____'+user?.id;
     return (
         <div className="min-h-screen bg-[#FDFDFD]">
             <Navbar />
             <Suspense fallback={<Skeleton />}>
-                <ProductDetails id={productUserId} />
+                <ProductDetails id={id} />
             </Suspense>
         </div>
     );
 }
 
 async function ProductDetails({ id }: { id: string }) {
+    const requestHeaders = await headers();
     const res = await fetch(`${process.env.API_URL}top-deals/${id}`, {
-        next: { revalidate: 0 },
+        method: "GET",
+        headers: {
+            Cookie: requestHeaders.get("cookie") ?? "",
+        },
+        cache: "no-store",
     });
 
     const user = await isLoggedIn();

@@ -2,10 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import SwipperWrapper from "../ui/customer/components/Swipper-Wrapper";
 import { TopDealsResponse } from "../lib/definitions";
+import {  AddToWishlist } from "../ui/common/ui-elements";
+import { headers } from "next/headers";
+
 
 export default async function TopDeals() {
+    const requestHeaders = await headers();
     const res = await fetch("http://localhost:3000/api/top-deals", {
-        next: { revalidate: 60 },
+        // next: { revalidate: 60 },
+        method: "GET",
+        headers: {
+            Cookie: requestHeaders.get("cookie") ?? "",
+        },
+        cache: "no-store",
     });
     const topDeals: TopDealsResponse = await res.json();
     return (
@@ -45,9 +54,7 @@ export default async function TopDeals() {
                                                 ${deal.product_price}
                                             </span>
 
-                                            <button className="inline-flex items-center text-black bg-brand hover:bg-brand-strong rounded-base text-sm px-3 py-2">
-                                                Add to cart
-                                            </button>
+                                            <AddToWishlist id={deal._id} isWishlisted={deal.isInWishlist}/>
                                         </div>
                                     </div>
                                 </div>
