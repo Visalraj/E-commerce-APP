@@ -90,3 +90,12 @@ body {
 .animate-slide-in-right {
   animation: slideInRight 0.4s ease-out forwards;
 }
+
+.wishlist-btn.filledheart svg {
+    fill: #ef4444;
+    transition: fill 0.2s ease;
+}
+
+.wishlist-btn:hover svg {
+    fill: #b91c1c;
+}

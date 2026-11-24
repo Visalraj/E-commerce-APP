@@ -43,7 +43,7 @@ export function CreateButton({ isSubmitting }: { isSubmitting: boolean }) {
     );
 }
 
-export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; isWishlisted?: boolean; quantity: number }) {
+export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; isWishlisted?: boolean; quantity: number ;}) {
     const [wishlisted, setWishlisted] = useState(isWishlisted || false);
 
     const handleWishlistClick = async () => {
@@ -56,22 +56,12 @@ export function AddToCartButton({ id, isWishlisted,quantity }: { id?: string; is
             console.error("Client-side error:", err);
         }
     };
+    return  (
+        <button  className="SecondaryBtn flex items-center sm:flex-1 flex-1 justify-center sm:justify-center gap-3 w-full min-h-[64px] px-6 py-4
+            rounded-2xl text-white text-lg font-bold shadow-lg shadow-purple-500/20 border border-white/10   disabled:opacity-50"
+            onClick={handleWishlistClick}  >
+            {!wishlisted ? <Icon name="Wishlist" /> : <Icon name="Filledheart" />}
 
-    return (
-        <button
-            className="SecondaryBtn flex items-center  sm:flex-1 flex-1  justify-center sm:justify-center gap-3 w-full min-h-[64px] px-6 py-4
-                rounded-2xl text-white text-lg font-bold shadow-lg shadow-purple-500/20 border border-white/10
-                disabled:opacity-50" onClick={handleWishlistClick} >
-            {!wishlisted ? (
-                <>
-                    <Icon name="Wishlist" />{" "}
-                </>
-            ) : (
-                <>
-                    {" "}
-                    <Icon name="Filledheart" />{" "}
-                </>
-            )}
             {!wishlisted ? "Wishlist" : "Wishlisted"}
         </button>
     );
@@ -199,3 +189,30 @@ export function ProceedToCheckoutButton({ userid, from_page }: { userid?: string
     );
 }
 
+export function AddToWishlist({ id, isWishlisted }: { id: string; isWishlisted:boolean }) {
+    const [wishlisted, setWishlisted] = useState(isWishlisted || false);
+    const handleWishListButton = async(event: React.MouseEvent<HTMLButtonElement>) => {
+        const id = event.currentTarget.id;
+        const quantity = 1;
+        if(!id)return;
+        try {
+            const response = !wishlisted ? await addToCart({ id, quantity }) : await removeFromCart({ id });
+            response.status && setWishlisted((prev) => !prev);
+        } catch (err) {
+            console.error("Client-side error:", err);
+        }
+    }
+
+    return (
+        <>
+            <button
+                className={`${wishlisted ? 'filledheart ': ''} wishlist-btn inline-flex items-center text-black bg-brand hover:bg-brand-strong rounded-base text-sm px-3 py-2`}
+                aria-label="Add to Wishlist"
+                id={id}
+                onClick={handleWishListButton}
+            >
+                {!wishlisted ? <Icon name="Wishlist" /> : <Icon name="Filledheart" />}
+            </button>
+        </>
+    );
+}

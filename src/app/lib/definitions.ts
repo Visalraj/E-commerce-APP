@@ -24,6 +24,7 @@ export type Products_schema = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    isInWishlist:boolean;
     images: { url: string }[];
 }
 
