@@ -96,6 +96,4 @@ body {
     transition: fill 0.2s ease;
 }
 
-.wishlist-btn:hover svg {
-    fill: #b91c1c;
-}
+
