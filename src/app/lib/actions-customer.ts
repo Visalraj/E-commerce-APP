@@ -13,6 +13,7 @@ import UserWishlist from '@/models/user-wishlist';
 import { AuthState } from './definitions';
 import usersMultipleAddress from '@/models/user-multiple-address';
 import { revalidatePath } from "next/cache";
+import { auth } from '../auth';
 
 export async function authenticate( prevState: AuthState | undefined, formData: FormData ): Promise<AuthState | undefined> {    
     const FormSchema = z.object({
@@ -294,3 +295,45 @@ export async function createCustomerMultipleAddress(formData: FormData) {
         };
     }
 } 
+
+export async function getUserWishlists(){
+    const session = await auth();
+    const user_id = session?.user?.id
+    console.log(user_id);
+    try{
+        if(await connectDB()){
+            const userWishlists = await UserWishlist.aggregate([
+                {
+                    $match: {
+                        userId: new mongoose.Types.ObjectId(user_id),
+                    },
+                },
+                {
+                    $unwind: "$products",
+                },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "products.productId",
+                        foreignField: "_id",
+                        as: "productInfo",
+                    },
+                },
+                {
+                    $unwind: "$productInfo",
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        userId: 1,
+                        quantity: "$products.quantity",
+                        product: "$productInfo",
+                    },
+                },
+            ]);
+            return { status: 200, entities: userWishlists };
+        }
+    } catch(err){
+        console.log(err)
+}
+}
