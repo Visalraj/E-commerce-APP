@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { getUserWishlists } from "@/app/lib/actions-customer";
 import { trimCharacters } from "@/app/Helpers/function";
-
+import CartWrapper from "@/app/cart/CartWrapper";
+import ProductActions from "@/app/ui/customer/components/product-action";
+import { WishlistResponse } from "@/app/lib/definitions";
 
 export default async function Page() {
     const wishlists = await getUserWishlists();
     const response = wishlists?.entities.flat() ?? [];
+    const serializedResponse = JSON.parse(JSON.stringify(response));
     return (
         <>
             <h3 className="text-2xl font-semibold mb-4">Your Wishlists</h3>
@@ -13,62 +16,38 @@ export default async function Page() {
             <div className="flex gap-6 items-start">
                 {/* Wishlist - Left Column */}
                 <div className="w-3/5">
-                    {(response && response).map((item, i) => (
-                        <div className="border rounded-lg p-4 mt-4 bg-white shadow-sm" key={i}>
-                            <div className="flex gap-4 items-center">
-                                <Image
-                                    src="/images/slider-two.jpg"
-                                    alt="Christmas Sale"
-                                    height={100}
-                                    width={100}
-                                    className="rounded-lg"
-                                />
+                    {(serializedResponse && serializedResponse).map((item:WishlistResponse, i) => (
+                        <CartWrapper initialCartItems={[item]} key={item.product._id}>
+                            <div className="border rounded-lg p-4 mt-4 bg-white shadow-sm">
+                                <div className="flex gap-4 items-center">
+                                    <Image
+                                        src={`${process.env.NEXT_PUBLIC_CLOUDINARY_URL}${item.product.images}`}
+                                        alt="Christmas Sale"
+                                        height={100}
+                                        width={100}
+                                        className="rounded-lg"
+                                    />
 
-                                <div className="flex-1">
-                                    <h5 className="text-lg font-semibold">{item.product.product_name}</h5>
+                                    <div className="flex-1">
+                                        <h5 className="text-lg font-semibold">{item.product.product_name}</h5>
 
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        {trimCharacters(item.product.product_desc)}
-                                    </p>
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            {trimCharacters(item.product.product_desc)}
+                                        </p>
 
-                                    <p className="font-semibold mt-2">{`${process.env.NEXT_PUBLIC_PLATFORM_CURRENCY_SYMBOL}${item.product.product_price}`}</p>
-
-                                    <div className="flex items-center gap-3 mt-3 w-fit">
-                                        <label htmlFor={`quantity-${i}`} className="text-sm whitespace-nowrap">
-                                            Quantity:
-                                        </label>
-
-                                        <select
-                                            id={`quantity-${i}`}
-                                            className="border rounded px-3 py-2 w-20 shrink-0 bg-white"
-                                            defaultValue={item.quantity}
-                                        >
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2 mt-4">
-                                        <button
-                                            type="button"
-                                            className="SecondaryBtn text-white text-sm px-4 py-2 rounded-md"
-                                        >
-                                            Remove from Wishlist
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            className="PrimaryBtn text-white text-sm px-5 py-2 rounded-md"
-                                        >
-                                            Buy Now
-                                        </button>
+                                        <div className="flex flex-col gap-3 mt-3 w-full [&_.quantity-input]:!mt-0 [&_.quantity-input]:w-full [&_.quantity-input_label]:text-sm [&_.quantity-input_select]:!w-20 [&_.quantity-input_select]:!py-2 [&_.quantity-input_select]:!text-sm [&_.wrap-btns]:!mt-0 [&_.wrap-btns]:!pt-0 [&_.wrap-btns]:flex [&_.wrap-btns]:flex-row [&_.wrap-btns]:w-full [&_.wrap-btns]:gap-3 [&_.wrap-btns>button]:flex-1 [&_.wrap-btns>a]:flex-1 [&_.wrap-btns>a]:w-auto [&_.wrap-btns_button]:!min-h-[48px] [&_.wrap-btns_button]:!h-12 [&_.wrap-btns_button]:!px-3 [&_.wrap-btns_button]:!py-2 [&_.wrap-btns_button]:!text-sm [&_.wrap-btns_button_svg]:!size-5 [&_.quantity-input]:!flex [&_.quantity-input]:!flex-row [&_.quantity-input]:!items-center [&_.quantity-input]:!gap-3 [&_.quantity-input_label]:!mb-0 [&_.quantity-input_select]:!mt-0">
+                                            <ProductActions
+                                                id={item.product._id.toString()}
+                                                price={item.product.product_price}
+                                                isWishlisted={true}
+                                                currentQuantity={item.quantity === undefined ? 1 : item.quantity}
+                                                from="wishlist"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </CartWrapper>
                     ))}
                 </div>
 

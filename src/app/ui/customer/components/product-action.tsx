@@ -10,7 +10,7 @@ type ProductActionsProps = {
     price: number;
     isWishlisted?: boolean;
     currentQuantity: number;
-    from?: "product" | "cart";
+    from?: "product" | "cart" | "wishlist";
     style?: React.CSSProperties;
     className?: string;
 };
@@ -25,9 +25,7 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
             updateQuantity(id, newQuantity);
         }
     };
-
-
-    if(from === "cart"){
+    if(from === "cart" ){
         return (
             <>
                 <div className="flex flex-col gap-3">
@@ -69,6 +67,17 @@ export default function ProductActions({ id, price, isWishlisted, currentQuantit
                     from={from}
                 />
             </div>
+            {from === "wishlist" ? (
+                <>
+                    <div className="flex items-center  gap-4">
+                        <span className="">Price:</span>
+
+                        <span className="font-bold text-base">{`${process.env.NEXT_PUBLIC_PLATFORM_CURRENCY_SYMBOL}${(price * quantity).toFixed(2)}`}</span>
+                    </div>
+                </>
+            ) : (
+                ""
+            )}
 
             <div className="wrap-btns pt-4 mt-3 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <AddToCartButton id={id} isWishlisted={isWishlisted} quantity={quantity} />

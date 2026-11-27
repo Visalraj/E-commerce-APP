@@ -24,9 +24,9 @@ export type Products_schema = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-    isInWishlist:boolean;
+    isInWishlist: boolean;
     images: { url: string }[];
-}
+};
 
 export type TopDealsResponse = {
     status: number;
@@ -56,8 +56,27 @@ export type Cart = Products_schema & {
 };
 
 export type AuthState = {
-    errors?: {  customer_email?: string[];
-            customer_password?: string[];
-    };
+    errors?: { customer_email?: string[]; customer_password?: string[] };
     message?: string;
 };
+
+export interface WishlistProduct {
+    _id: string;
+    product_name: string;
+    product_desc: string;
+    product_price: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    images: string[];
+}
+
+export interface WishlistItem {
+    _id: string;
+    userId: string;
+    quantity: number;
+    product: WishlistProduct;
+}
+
+export type WishlistResponse = WishlistItem[];

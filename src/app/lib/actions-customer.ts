@@ -171,8 +171,9 @@ export async function addToCart({ id, quantity }: { id?: string; quantity: numbe
     }
 }
 
-export async function removeFromCart({ id }: { id?: string }) {
+export async function removeFromCart({ id,from="wishlist" }: { id?: string;from?:string }) {
     const productId = id || 'unknown';
+
     if (!mongoose.Types.ObjectId.isValid(productId)) {
         return NextResponse.json(
             { status: 400, error: "Invalid ID format" },
@@ -199,6 +200,7 @@ export async function removeFromCart({ id }: { id?: string }) {
            },
        );
 
+
        if (wishlist && wishlist.products.length === 0) {
            await UserWishlist.deleteOne({
                _id: wishlist._id,
@@ -206,7 +208,8 @@ export async function removeFromCart({ id }: { id?: string }) {
        }
 
         console.log("Product removed from wishlist successfully");
-        revalidatePath("/wishlist");
+        if (from === "wishlist")
+            revalidatePath("/wishlist");
         return { status: true, message: "Product removed from wishlist" };      
     } catch (error) {
         console.error("Error removing product from wishlist:", error);
@@ -320,6 +323,43 @@ export async function getUserWishlists(){
                     },
                 },
                 {
+                    $lookup: {
+                        from: "product_images",
+                        let: {
+                            productId: "$products.productId",
+                        },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$product_id", "$$productId"],
+                                    },
+                                },
+                            },
+                            {
+                                $project: {
+                                    _id: 0,
+                                    images: 1,
+                                },
+                            },
+                        ],
+                        as: "productImages",
+                    },
+                },
+                {
+                    $addFields: {
+                        productImages: {
+                            $reduce: {
+                                input: "$productImages",
+                                initialValue: [],
+                                in: {
+                                    $concatArrays: ["$$value", { $ifNull: ["$$this.images", []] }],
+                                },
+                            },
+                        },
+                    },
+                },
+                {
                     $unwind: "$productInfo",
                 },
                 {
@@ -327,7 +367,9 @@ export async function getUserWishlists(){
                         _id: 1,
                         userId: 1,
                         quantity: "$products.quantity",
-                        product: "$productInfo",
+                        product: {
+                            $mergeObjects: ["$productInfo", { images: "$productImages" }],
+                        },
                     },
                 },
             ]);
