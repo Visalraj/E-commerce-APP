@@ -66,6 +66,7 @@ async function ProductDetails({ id }: { id: string }) {
                             price={data.product_price}
                             isWishlisted={data.isInWishlist}
                             currentQuantity={data.quantity === undefined ? 1 : data.quantity}
+                            from="cart"
                         />
                     </div>
                 </div>
